@@ -61,8 +61,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 
-               'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-primary);
@@ -141,11 +141,73 @@ body {
   line-height: 1.5;
 }
 
+/* 折叠面板样式 */
+details>summary {
+  list-style: none;
+  /* Chrome, Edge, Safari */
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  user-select: none;
+  outline: none;
+}
+
+details>summary::-webkit-details-marker {
+  display: none;
+  /* Chrome (older) */
+}
+
+/* 覆盖 h2 margins 以适配 summary */
+details>summary h2 {
+  margin-bottom: 4px;
+}
+
+details>summary .description {
+  margin-bottom: 0;
+  transition: opacity 0.2s;
+}
+
+details[open]>summary .description {
+  margin-bottom: 20px;
+  /* 展开时恢复间距 */
+}
+
+.toggle-icon {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  transition: transform 0.3s ease;
+  margin-top: 6px;
+  padding: 4px;
+}
+
+details[open] .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.card-content {
+  animation: fadeIn 0.3s ease;
+}
+
+/* 小节样式 */
 .subsection {
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
 }
+
+.subsection.mt-0 {
+  margin-top: 0;
+  padding-top: 10px;
+  /* 稍微减少顶部间距 */
+  border-top: 1px solid var(--border-color);
+  /* 依然保留分割线，因为 summary 下面直接接表单 */
+}
+
+/* 当 details 展开时，第一个 subsection 不需要分割线，因为 summary 已经有足够的分隔感？
+   或者保留分割线。这里保留分割线。
+   修正：mt-0 是为了覆盖默认的 margin-top: 24px，但 border-top 还是需要的，分隔标题和内容。
+*/
 
 .subsection h3 {
   font-size: 15px;
@@ -236,6 +298,11 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
 }
 
 .btn-primary {
@@ -406,6 +473,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

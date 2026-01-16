@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search Relay - 设置</title>
   <link rel="stylesheet" href="options.css">
 </head>
+
 <body>
   <div class="container">
     <!-- 页面标题 -->
@@ -21,17 +23,17 @@
     <section class="card">
       <h2>🎯 目标搜索引擎</h2>
       <p class="description">选择点击插件图标时要跳转到的搜索引擎</p>
-      
+
       <div class="form-group">
         <label for="targetEngine">当前目标引擎</label>
         <select id="targetEngine" class="select">
           <!-- 由 JavaScript 动态填充 -->
         </select>
       </div>
-      
+
       <!-- 添加自定义目标引擎 -->
       <div class="subsection">
-        <h3>➕ 添加自定义目标引擎</h3>
+        <h3>➕ 添加/编辑自定义目标引擎</h3>
         <div class="form-row">
           <div class="form-group">
             <label for="newEngineName">引擎名称</label>
@@ -39,7 +41,7 @@
           </div>
           <div class="form-group">
             <label for="newEngineBadge">Badge 文字</label>
-            <input type="text" id="newEngineBadge" class="input" placeholder="例如: Bi" maxlength="3">
+            <input type="text" id="newEngineBadge" class="input" placeholder="例如: Bi" maxlength="4">
           </div>
         </div>
         <div class="form-group">
@@ -47,9 +49,12 @@
           <input type="text" id="newEngineUrl" class="input" placeholder="例如: https://www.bing.com/search?q=%s">
           <span class="hint">使用 <code>%s</code> 作为关键词占位符</span>
         </div>
-        <button id="addTargetEngine" class="btn btn-primary">添加目标引擎</button>
+        <div class="btn-group">
+          <button id="addTargetEngine" class="btn btn-primary">添加目标引擎</button>
+          <button id="cancelEditEngine" class="btn btn-secondary" style="display: none;">取消编辑</button>
+        </div>
       </div>
-      
+
       <!-- 已添加的自定义引擎列表 -->
       <div class="subsection" id="customEnginesSection" style="display: none;">
         <h3>📋 自定义引擎列表</h3>
@@ -61,34 +66,46 @@
 
     <!-- 源搜索引擎规则 -->
     <section class="card">
-      <h2>📑 源搜索引擎规则</h2>
-      <p class="description">配置从哪些搜索引擎页面提取关键词。当你在这些搜索引擎页面点击插件图标时，会自动提取搜索词并跳转。</p>
-      
-      <!-- 添加新规则 -->
-      <div class="subsection">
-        <h3>➕ 添加新规则</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="newRuleDomain">域名匹配</label>
-            <input type="text" id="newRuleDomain" class="input" placeholder="例如: baidu.com">
-            <span class="hint">支持子域名匹配，如输入 <code>baidu.com</code> 可匹配 <code>www.baidu.com</code></span>
+      <details>
+        <summary class="card-header">
+          <div>
+            <h2>📑 源搜索引擎规则</h2>
+            <p class="description">配置从哪些搜索引擎页面提取关键词。当你在这些搜索引擎页面点击插件图标时，会自动提取搜索词并跳转。</p>
           </div>
-          <div class="form-group">
-            <label for="newRuleParam">URL 参数名</label>
-            <input type="text" id="newRuleParam" class="input" placeholder="例如: wd 或 q">
-            <span class="hint">用于从 URL 中提取搜索关键词的参数名</span>
+          <span class="toggle-icon">▼</span>
+        </summary>
+
+        <div class="card-content">
+          <!-- 添加新规则 -->
+          <div class="subsection mt-0">
+            <h3>➕ 添加/编辑规则</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newRuleDomain">域名匹配</label>
+                <input type="text" id="newRuleDomain" class="input" placeholder="例如: baidu.com">
+                <span class="hint">支持子域名匹配，如输入 <code>baidu.com</code> 可匹配 <code>www.baidu.com</code></span>
+              </div>
+              <div class="form-group">
+                <label for="newRuleParam">URL 参数名</label>
+                <input type="text" id="newRuleParam" class="input" placeholder="例如: wd 或 q">
+                <span class="hint">用于从 URL 中提取搜索关键词的参数名</span>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button id="addSourceRule" class="btn btn-primary">添加规则</button>
+              <button id="cancelEditSourceRule" class="btn btn-secondary" style="display: none;">取消编辑</button>
+            </div>
+          </div>
+
+          <!-- 规则列表 -->
+          <div class="subsection">
+            <h3>📋 当前规则列表</h3>
+            <div id="sourceRulesList" class="list">
+              <!-- 由 JavaScript 动态填充 -->
+            </div>
           </div>
         </div>
-        <button id="addSourceRule" class="btn btn-primary">添加规则</button>
-      </div>
-      
-      <!-- 规则列表 -->
-      <div class="subsection">
-        <h3>📋 当前规则列表</h3>
-        <div id="sourceRulesList" class="list">
-          <!-- 由 JavaScript 动态填充 -->
-        </div>
-      </div>
+      </details>
     </section>
 
     <!-- 操作按钮 -->
@@ -99,7 +116,7 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-      <p>Search Relay v0.1.0 | 
+      <p>Search Relay v0.1.0 |
         <a href="https://github.com/Hakuin123/Search-Relay" target="_blank">GitHub</a>
       </p>
     </footer>
@@ -107,4 +124,5 @@
 
   <script src="options.js"></script>
 </body>
+
 </html>

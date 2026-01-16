@@ -39,19 +39,22 @@ const elements = {
     // 目标引擎选择
     targetEngine: document.getElementById('targetEngine'),
 
-    // 添加自定义目标引擎
+    // 添加/编辑自定义目标引擎
     newEngineName: document.getElementById('newEngineName'),
     newEngineBadge: document.getElementById('newEngineBadge'),
     newEngineUrl: document.getElementById('newEngineUrl'),
     addTargetEngine: document.getElementById('addTargetEngine'),
+    cancelEditEngine: document.getElementById('cancelEditEngine'),
     customEnginesSection: document.getElementById('customEnginesSection'),
     customEnginesList: document.getElementById('customEnginesList'),
 
-    // 添加源规则
+    // 添加/编辑源规则
     newRuleDomain: document.getElementById('newRuleDomain'),
     newRuleParam: document.getElementById('newRuleParam'),
     addSourceRule: document.getElementById('addSourceRule'),
+    cancelEditSourceRule: document.getElementById('cancelEditSourceRule'),
     sourceRulesList: document.getElementById('sourceRulesList'),
+    sourceRulesDetails: document.querySelector('details'),
 
     // 其他
     resetDefaults: document.getElementById('resetDefaults'),
@@ -67,6 +70,11 @@ let state = {
     targetEngines: [...DEFAULT_TARGET_ENGINES],
     sourceRules: [...DEFAULT_SOURCE_RULES]
 };
+
+// 当前正在编辑的规则索引，-1 表示添加新规则
+let editingRuleIndex = -1;
+// 当前正在编辑的引擎ID，null 表示添加新引擎
+let editingEngineId = null;
 
 // ============================================
 // 初始化
@@ -131,11 +139,17 @@ function bindEvents() {
         await saveSettings();
     });
 
-    // 添加自定义目标引擎
-    elements.addTargetEngine.addEventListener('click', addCustomTargetEngine);
+    // 添加/保存自定义目标引擎
+    elements.addTargetEngine.addEventListener('click', handleCustomEngineSubmit);
 
-    // 添加源规则
-    elements.addSourceRule.addEventListener('click', addSourceRule);
+    // 取消编辑自定义目标引擎
+    elements.cancelEditEngine.addEventListener('click', resetEngineEditState);
+
+    // 添加/保存源规则
+    elements.addSourceRule.addEventListener('click', handleSourceRuleSubmit);
+
+    // 取消编辑源规则
+    elements.cancelEditSourceRule.addEventListener('click', resetEditState);
 
     // 恢复默认设置
     elements.resetDefaults.addEventListener('click', resetToDefaults);
@@ -189,7 +203,8 @@ function renderCustomEnginesList() {
             badge: engine.badge,
             title: engine.name,
             subtitle: engine.url,
-            onDelete: () => deleteTargetEngine(engine.id)
+            onDelete: () => deleteTargetEngine(engine.id),
+            onEdit: () => startEditCustomEngine(engine.id)
         });
         elements.customEnginesList.appendChild(item);
     });
@@ -211,7 +226,8 @@ function renderSourceRulesList() {
             badge: rule.param,
             title: rule.domain,
             subtitle: `参数: ${rule.param}`,
-            onDelete: () => deleteSourceRule(index)
+            onDelete: () => deleteSourceRule(index),
+            onEdit: () => startEditSourceRule(index)
         });
         elements.sourceRulesList.appendChild(item);
     });
@@ -225,11 +241,18 @@ function renderSourceRulesList() {
  * @param {string} options.title - 标题
  * @param {string} options.subtitle - 副标题
  * @param {Function} options.onDelete - 删除回调
+ * @param {Function} [options.onEdit] - 编辑回调（可选）
  * @returns {HTMLElement} 列表项元素
  */
-function createListItem({ badge, title, subtitle, onDelete }) {
+function createListItem({ badge, title, subtitle, onDelete, onEdit }) {
     const item = document.createElement('div');
     item.className = 'list-item';
+
+    let actionsHtml = '';
+    if (onEdit) {
+        actionsHtml += `<button class="btn btn-secondary btn-sm edit-btn">编辑</button>`;
+    }
+    actionsHtml += `<button class="btn btn-danger btn-sm delete-btn">删除</button>`;
 
     item.innerHTML = `
     <div class="list-item-content">
@@ -240,13 +263,16 @@ function createListItem({ badge, title, subtitle, onDelete }) {
       </div>
     </div>
     <div class="list-item-actions">
-      <button class="btn btn-danger btn-sm">删除</button>
+      ${actionsHtml}
     </div>
   `;
 
-    // 绑定删除按钮事件
-    const deleteBtn = item.querySelector('.btn-danger');
-    deleteBtn.addEventListener('click', onDelete);
+    // 绑定事件
+    item.querySelector('.delete-btn').addEventListener('click', onDelete);
+
+    if (onEdit) {
+        item.querySelector('.edit-btn').addEventListener('click', onEdit);
+    }
 
     return item;
 }
@@ -256,9 +282,9 @@ function createListItem({ badge, title, subtitle, onDelete }) {
 // ============================================
 
 /**
- * 添加自定义目标引擎
+ * 处理自定义目标引擎提交
  */
-async function addCustomTargetEngine() {
+async function handleCustomEngineSubmit() {
     const name = elements.newEngineName.value.trim();
     const badge = elements.newEngineBadge.value.trim() || name.charAt(0);
     const url = elements.newEngineUrl.value.trim();
@@ -282,26 +308,73 @@ async function addCustomTargetEngine() {
         return;
     }
 
-    // 生成唯一 ID
-    const id = 'custom_' + Date.now();
-
-    // 添加到列表
-    state.targetEngines.push({
-        id,
-        name,
-        badge,
-        url,
-        isDefault: false
-    });
+    if (editingEngineId === null) {
+        // === 添加新引擎 ===
+        const id = 'custom_' + Date.now();
+        state.targetEngines.push({
+            id,
+            name,
+            badge,
+            url,
+            isDefault: false
+        });
+    } else {
+        // === 更新现有引擎 ===
+        const index = state.targetEngines.findIndex(e => e.id === editingEngineId);
+        if (index !== -1) {
+            state.targetEngines[index] = {
+                ...state.targetEngines[index],
+                name,
+                badge,
+                url
+            };
+        }
+    }
 
     // 保存并刷新 UI
     await saveSettings();
     renderAll();
+    resetEngineEditState();
+}
 
-    // 清空输入框
+/**
+ * 开始编辑自定义目标引擎
+ * @param {string} id - 引擎 ID
+ */
+function startEditCustomEngine(id) {
+    const engine = state.targetEngines.find(e => e.id === id);
+    if (!engine) return;
+
+    editingEngineId = id;
+
+    // 填充表单
+    elements.newEngineName.value = engine.name;
+    elements.newEngineBadge.value = engine.badge;
+    elements.newEngineUrl.value = engine.url;
+
+    // 更新按钮状态
+    elements.addTargetEngine.textContent = '保存修改';
+    elements.cancelEditEngine.style.display = 'inline-flex';
+
+    // 聚焦
+    elements.newEngineName.focus();
+    elements.newEngineName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/**
+ * 重置引擎编辑状态
+ */
+function resetEngineEditState() {
+    editingEngineId = null;
+
+    // 清空表单
     elements.newEngineName.value = '';
     elements.newEngineBadge.value = '';
     elements.newEngineUrl.value = '';
+
+    // 恢复按钮状态
+    elements.addTargetEngine.textContent = '添加目标引擎';
+    elements.cancelEditEngine.style.display = 'none';
 }
 
 /**
@@ -310,6 +383,10 @@ async function addCustomTargetEngine() {
  * @param {string} engineId - 引擎 ID
  */
 async function deleteTargetEngine(engineId) {
+    if (editingEngineId === engineId) {
+        resetEngineEditState();
+    }
+
     // 过滤掉要删除的引擎
     state.targetEngines = state.targetEngines.filter(e => e.id !== engineId);
 
@@ -323,9 +400,9 @@ async function deleteTargetEngine(engineId) {
 }
 
 /**
- * 添加源规则
+ * 处理源规则提交（添加或保存修改）
  */
-async function addSourceRule() {
+async function handleSourceRuleSubmit() {
     const domain = elements.newRuleDomain.value.trim().toLowerCase();
     const param = elements.newRuleParam.value.trim();
 
@@ -342,22 +419,68 @@ async function addSourceRule() {
         return;
     }
 
-    // 检查是否已存在相同规则
-    const exists = state.sourceRules.some(r => r.domain === domain);
-    if (exists) {
-        showStatus('该域名规则已存在', true);
-        return;
+    if (editingRuleIndex === -1) {
+        // === 添加新规则 ===
+        const exists = state.sourceRules.some(r => r.domain === domain);
+        if (exists) {
+            showStatus('该域名规则已存在', true);
+            return;
+        }
+        state.sourceRules.push({ domain, param });
+    } else {
+        // === 更新现有规则 ===
+        const exists = state.sourceRules.some((r, idx) => r.domain === domain && idx !== editingRuleIndex);
+        if (exists) {
+            showStatus('该域名规则已存在', true);
+            return;
+        }
+        state.sourceRules[editingRuleIndex] = { domain, param };
     }
-
-    // 添加规则
-    state.sourceRules.push({ domain, param });
 
     await saveSettings();
     renderSourceRulesList();
+    resetEditState();
+}
 
-    // 清空输入框
+/**
+ * 开始编辑源规则
+ * @param {number} index - 规则索引
+ */
+function startEditSourceRule(index) {
+    const rule = state.sourceRules[index];
+    if (!rule) return;
+
+    editingRuleIndex = index;
+
+    // 填充表单
+    elements.newRuleDomain.value = rule.domain;
+    elements.newRuleParam.value = rule.param;
+
+    // 更新按钮状态
+    elements.addSourceRule.textContent = '保存修改';
+    elements.cancelEditSourceRule.style.display = 'inline-flex';
+
+    if (elements.sourceRulesDetails && !elements.sourceRulesDetails.open) {
+        elements.sourceRulesDetails.open = true;
+    }
+
+    elements.newRuleDomain.focus();
+    elements.newRuleDomain.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/**
+ * 重置编辑状态
+ */
+function resetEditState() {
+    editingRuleIndex = -1;
+
+    // 清空表单
     elements.newRuleDomain.value = '';
     elements.newRuleParam.value = '';
+
+    // 恢复按钮状态
+    elements.addSourceRule.textContent = '添加规则';
+    elements.cancelEditSourceRule.style.display = 'none';
 }
 
 /**
@@ -366,6 +489,12 @@ async function addSourceRule() {
  * @param {number} index - 规则索引
  */
 async function deleteSourceRule(index) {
+    if (editingRuleIndex === index) {
+        resetEditState();
+    } else if (editingRuleIndex > index) {
+        editingRuleIndex--;
+    }
+
     state.sourceRules.splice(index, 1);
     await saveSettings();
     renderSourceRulesList();
@@ -385,6 +514,8 @@ async function resetToDefaults() {
         sourceRules: [...DEFAULT_SOURCE_RULES]
     };
 
+    resetEditState();
+    resetEngineEditState();
     await saveSettings();
     renderAll();
     showStatus('已恢复默认设置');
@@ -405,7 +536,6 @@ function showStatus(message, isError = false) {
     elements.statusMessage.style.color = isError ? 'var(--danger-color)' : 'var(--success-color)';
     elements.statusMessage.classList.add('show');
 
-    // 2秒后隐藏
     setTimeout(() => {
         elements.statusMessage.classList.remove('show');
     }, 2000);
