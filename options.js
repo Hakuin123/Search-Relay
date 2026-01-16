@@ -3,7 +3,7 @@
  * 
  * 功能：
  * 1. 加载和保存用户配置
- * 2. 管理搜索引擎（统一目标引擎和源引擎）
+ * 2. 管理搜索引擎（使用 Grid.js 展示列表）
  */
 
 import { DEFAULT_ENGINES } from './config.js';
@@ -27,7 +27,9 @@ const elements = {
     newEngineIsSource: document.getElementById('newEngineIsSource'),
     addEngine: document.getElementById('addEngine'),
     cancelEditEngine: document.getElementById('cancelEditEngine'),
-    enginesList: document.getElementById('enginesList'),
+    // enginesList 已移除，使用 grid 容器
+    enginesGrid: document.getElementById('engines-grid'),
+    addEngineDetails: document.getElementById('addEngineDetails'),
 
     // 其他
     resetDefaults: document.getElementById('resetDefaults'),
@@ -47,12 +49,16 @@ let state = {
 // 当前正在编辑的引擎ID，null 表示添加新引擎
 let editingEngineId = null;
 
+// Grid.js 实例
+let grid = null;
+
 // ============================================
 // 初始化
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadSettings();
+    initGrid();
     bindEvents();
     renderAll();
 });
@@ -100,6 +106,124 @@ async function saveSettings() {
 }
 
 // ============================================
+// Grid.js 初始化与渲染
+// ============================================
+
+function initGrid() {
+    grid = new gridjs.Grid({
+        columns: [
+            { id: 'name', name: '引擎名称', sort: true, width: '10%' },
+            {
+                id: 'badge',
+                name: 'Badge',
+                width: '100px',
+                formatter: (cell) => gridjs.html(`<span class="cell-badge">${escapeHtml(cell)}</span>`)
+            },
+            {
+                id: 'url',
+                name: 'URL 模板',
+                formatter: (cell) => gridjs.html(`<span class="cell-url" title="${escapeHtml(cell)}">${escapeHtml(cell)}</span>`)
+            },
+            { id: 'param', name: '参数', width: '100px' },
+            {
+                id: 'isSource',
+                name: '源引擎',
+                sort: true,
+                width: '9%',
+                formatter: (cell, row) => {
+                    const id = row.cells[7].data; // 获取隐藏的 ID 列
+                    return gridjs.html(`
+                        <input type="checkbox" 
+                               class="chk-source" 
+                               data-id="${id}" 
+                               ${cell ? 'checked' : ''} />
+                    `);
+                }
+            },
+            {
+                id: 'isTarget',
+                name: '目标引擎',
+                sort: true,
+                width: '10.5%',
+                formatter: (cell, row) => {
+                    const id = row.cells[7].data; // 获取隐藏的 ID 列
+                    return gridjs.html(`
+                        <input type="checkbox" 
+                               class="chk-target" 
+                               data-id="${id}" 
+                               ${cell ? 'checked' : ''} />
+                    `);
+                }
+            },
+            {
+                id: 'actions',
+                name: '操作',
+                sort: false,
+                width: '8%',
+                formatter: (cell, row) => {
+                    const id = row.cells[7].data;
+                    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`;
+                    
+                    return gridjs.html(`
+                        <div style="display: flex; gap: 4px; justify-content: center;">
+                            <button class="btn-icon btn-edit" data-id="${id}" title="编辑">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                            </button>
+                            <button class="btn-icon btn-delete" data-id="${id}" title="删除">
+                                ${deleteIcon}
+                            </button>
+                        </div>
+                    `);
+                }
+            },
+            { id: 'id', name: 'ID', hidden: true }
+        ],
+        data: [],
+        search: false,
+        sort: true,
+        resizable: true,
+        style: {
+            table: {
+                'width': '100%',
+                'white-space': 'nowrap'
+            }
+        },
+        language: {
+            'search': { 'placeholder': '搜索...' },
+            'pagination': {
+                'previous': '上一页',
+                'next': '下一页',
+                'showing': '显示',
+                'results': () => '条记录'
+            },
+            'loading': '加载中...',
+            'noRecordsFound': '暂无引擎'
+        }
+    }).render(elements.enginesGrid);
+}
+
+/**
+ * 刷新 Grid 数据
+ */
+function renderEnginesGrid() {
+    if (!grid) return;
+
+    const data = state.engines.map(e => ({
+        name: e.name,
+        badge: e.badge,
+        url: e.url,
+        param: e.param || '',
+        isSource: e.isSource,
+        isTarget: e.isTarget,
+        id: e.id
+    }));
+
+    grid.updateConfig({
+        data: data
+    }).forceRender();
+}
+
+// ============================================
 // 事件绑定
 // ============================================
 
@@ -127,7 +251,70 @@ function bindEvents() {
 
     // 恢复默认设置
     elements.resetDefaults.addEventListener('click', resetToDefaults);
+
+    // Grid.js 事件委托
+    elements.enginesGrid.addEventListener('click', handleGridClick);
+    elements.enginesGrid.addEventListener('change', handleGridChange);
 }
+
+/**
+ * 处理 Grid 点击事件 (编辑/删除)
+ */
+function handleGridClick(e) {
+    const btnEdit = e.target.closest('.btn-edit');
+    const btnDelete = e.target.closest('.btn-delete');
+
+    if (btnEdit) {
+        const id = btnEdit.dataset.id;
+        startEditEngine(id);
+    } else if (btnDelete) {
+        const id = btnDelete.dataset.id;
+        deleteEngine(id);
+    }
+}
+
+/**
+ * 处理 Grid 变更事件 (Checkbox)
+ */
+async function handleGridChange(e) {
+    if (e.target.classList.contains('chk-source')) {
+        const id = e.target.dataset.id;
+        const checked = e.target.checked;
+        await updateEngineState(id, { isSource: checked });
+    } else if (e.target.classList.contains('chk-target')) {
+        const id = e.target.dataset.id;
+        const checked = e.target.checked;
+        await updateEngineState(id, { isTarget: checked });
+    }
+}
+
+/**
+ * 更新引擎状态
+ */
+async function updateEngineState(id, updates) {
+    const index = state.engines.findIndex(e => e.id === id);
+    if (index !== -1) {
+        state.engines[index] = { ...state.engines[index], ...updates };
+        
+        // 如果取消了 isTarget 且当前是选中目标，需要处理
+        if (updates.isTarget === false && state.targetEngine === id) {
+            // 尝试切换到其他目标
+             const targetEngines = state.engines.filter(e => e.isTarget);
+             if (targetEngines.length > 0) {
+                 state.targetEngine = targetEngines[0].id;
+             } else {
+                 state.targetEngine = '';
+             }
+        }
+
+        await saveSettings();
+        // 重新渲染选择框（Grid 不需要重绘，因为 Checkbox 状态已经改变，除非需要排序更新）
+        // 如果启用了排序，最好重新渲染以保持正确顺序，但为了体验流畅，可以暂不重绘 Grid
+        // 但下拉框必须更新
+        renderTargetEngineSelect();
+    }
+}
+
 
 /**
  * 处理 URL 输入，自动提取 domain 和 param
@@ -179,7 +366,7 @@ function handleUrlInput() {
 function renderAll() {
     renderSettings();
     renderTargetEngineSelect();
-    renderEnginesList();
+    renderEnginesGrid();
 }
 
 /**
@@ -219,60 +406,6 @@ function renderTargetEngineSelect() {
         state.targetEngine = targetEngines[0].id;
         saveSettings();
     }
-}
-
-/**
- * 渲染引擎列表
- */
-function renderEnginesList() {
-    elements.enginesList.innerHTML = '';
-
-    if (state.engines.length === 0) {
-        elements.enginesList.innerHTML = '<div class="list-empty">暂无引擎</div>';
-        return;
-    }
-
-    state.engines.forEach(engine => {
-        const item = createEngineListItem(engine);
-        elements.enginesList.appendChild(item);
-    });
-}
-
-/**
- * 创建引擎列表项 DOM 元素
- * 
- * @param {Object} engine - 引擎对象
- * @returns {HTMLElement} 列表项元素
- */
-function createEngineListItem(engine) {
-    const item = document.createElement('div');
-    item.className = 'list-item';
-
-    // 生成角色标签
-    const roles = [];
-    if (engine.isTarget) roles.push('目标');
-    if (engine.isSource) roles.push('源');
-    const roleText = roles.length > 0 ? roles.join(' / ') : '未启用';
-
-    item.innerHTML = `
-    <div class="list-item-content">
-      <span class="list-item-badge">${escapeHtml(engine.badge)}</span>
-      <div class="list-item-info">
-        <div class="list-item-title">${escapeHtml(engine.name)} <span class="role-tag">${escapeHtml(roleText)}</span></div>
-        <div class="list-item-subtitle">${escapeHtml(engine.domain || '无域名')} · 参数: ${escapeHtml(engine.param || '无')}</div>
-      </div>
-    </div>
-    <div class="list-item-actions">
-      <button class="btn btn-secondary btn-sm edit-btn">编辑</button>
-      <button class="btn btn-danger btn-sm delete-btn">删除</button>
-    </div>
-  `;
-
-    // 绑定事件
-    item.querySelector('.edit-btn').addEventListener('click', () => startEditEngine(engine.id));
-    item.querySelector('.delete-btn').addEventListener('click', () => deleteEngine(engine.id));
-
-    return item;
 }
 
 // ============================================
@@ -359,6 +492,11 @@ function startEditEngine(id) {
 
     editingEngineId = id;
 
+    // 展开编辑区域
+    if (elements.addEngineDetails) {
+        elements.addEngineDetails.open = true;
+    }
+
     // 填充表单
     elements.newEngineName.value = engine.name;
     elements.newEngineBadge.value = engine.badge;
@@ -405,6 +543,10 @@ function resetEditState() {
 async function deleteEngine(engineId) {
     if (editingEngineId === engineId) {
         resetEditState();
+    }
+
+    if (!confirm('确定要删除此引擎吗？')) {
+        return;
     }
 
     // 过滤掉要删除的引擎
@@ -471,6 +613,7 @@ function showStatus(message, isError = false) {
  * @returns {string} 转义后的字符串
  */
 function escapeHtml(str) {
+    if (!str) return '';
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;

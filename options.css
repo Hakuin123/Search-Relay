@@ -60,6 +60,27 @@
   box-sizing: border-box;
 }
 
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a0aec0;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -75,7 +96,7 @@ body {
    ============================================ */
 
 .container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -97,10 +118,6 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-
-.header .icon {
-  font-size: 32px;
 }
 
 .header .subtitle {
@@ -371,75 +388,131 @@ details[open] .toggle-icon {
 }
 
 /* ============================================
-   列表样式
+   Grid.js 样式覆盖
    ============================================ */
 
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.gridjs-container {
+  font-family: inherit;
+  color: var(--text-primary);
 }
 
-.list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg-tertiary);
+.gridjs-wrapper {
   border-radius: var(--radius-sm);
-  transition: background 0.2s ease;
+  border: 1px solid var(--border-color);
+  box-shadow: none;
 }
 
-.list-item:hover {
-  background: var(--border-color);
+.gridjs-head {
+  padding-bottom: 0;
 }
 
-.list-item-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
+.gridjs-th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 12px;
+  outline: none;
 }
 
-.list-item-badge {
+.gridjs-th-content {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.gridjs-td {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 12px;
+}
+
+.gridjs-tr:last-child .gridjs-td {
+  border-bottom: none;
+}
+
+.gridjs-tr:hover .gridjs-td {
+  background-color: var(--bg-tertiary);
+}
+
+/* 特定列居中对齐 */
+th[data-column-id="isSource"],
+td[data-column-id="isSource"],
+th[data-column-id="isTarget"],
+td[data-column-id="isTarget"],
+th[data-column-id="actions"],
+td[data-column-id="actions"] {
+  text-align: center !important;
+}
+
+/* 禁用特定列的调整大小手柄 */
+th[data-column-id="isSource"] .gridjs-resizable,
+th[data-column-id="isTarget"] .gridjs-resizable,
+th[data-column-id="actions"] .gridjs-resizable {
+  display: none !important;
+}
+
+/* Grid内复选框样式 */
+.chk-source,
+.chk-target {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent-color);
+  vertical-align: middle;
+  margin: 0;
+}
+
+/* 单元格内容样式 */
+.cell-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  font-size: 12px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 11px;
   font-weight: 600;
   color: #ffffff;
   background: var(--accent-color);
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-.list-item-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.list-item-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-  white-space: nowrap;
+.cell-url {
+  color: var(--text-tertiary);
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
-.role-tag {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--accent-color);
-  background: rgba(66, 133, 244, 0.1);
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-left: 8px;
-  vertical-align: middle;
+/* 操作按钮 */
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--text-tertiary);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  color: var(--danger-color);
+  background-color: rgba(229, 62, 62, 0.1);
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .checkbox-row {
@@ -453,28 +526,6 @@ details[open] .toggle-icon {
   .checkbox-row {
     grid-template-columns: 1fr;
   }
-}
-
-.list-item-subtitle {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.list-item-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.list-empty {
-  text-align: center;
-  padding: 24px;
-  color: var(--text-tertiary);
-  font-size: 13px;
 }
 
 /* ============================================
@@ -538,6 +589,86 @@ details[open] .toggle-icon {
   animation: fadeIn 0.3s ease;
 }
 
-.list-item {
-  animation: fadeIn 0.2s ease;
+/* ============================================
+   Grid.js 深色模式适配
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  #engines-grid .gridjs-container {
+    color: var(--text-primary) !important;
+  }
+
+  #engines-grid .gridjs-wrapper {
+    border-color: var(--border-color) !important;
+    background-color: var(--bg-secondary) !important;
+  }
+
+  #engines-grid .gridjs-head {
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  #engines-grid .gridjs-footer {
+    background-color: var(--bg-tertiary) !important;
+    border-top: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+  }
+
+  #engines-grid th.gridjs-th {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-secondary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    border-right: none !important;
+  }
+
+  #engines-grid .gridjs-tr {
+    background-color: var(--bg-secondary) !important;
+  }
+
+  #engines-grid .gridjs-tr:hover td.gridjs-td {
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  #engines-grid td.gridjs-td {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    border-right: none !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* 分页按钮 */
+  #engines-grid .gridjs-pagination .gridjs-pages button {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+  }
+
+  #engines-grid .gridjs-pagination .gridjs-pages button:hover {
+    background-color: var(--border-color) !important;
+  }
+
+  #engines-grid .gridjs-pagination .gridjs-pages button:disabled {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-tertiary) !important;
+    opacity: 0.5;
+  }
+
+  #engines-grid .gridjs-pagination .gridjs-pages button.gridjs-currentPage {
+    background-color: var(--accent-color) !important;
+    color: #ffffff !important;
+    border-color: var(--accent-color) !important;
+  }
+
+  #engines-grid .gridjs-summary {
+    color: var(--text-secondary) !important;
+  }
+
+  /* 深色模式滚动条 */
+  ::-webkit-scrollbar-thumb {
+    background-color: #4a5568;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #718096;
+  }
+
+
 }

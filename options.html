@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Search Relay - 设置</title>
+    <link rel="stylesheet" href="libs/mermaid.min.css" />
     <link rel="stylesheet" href="options.css" />
   </head>
 
@@ -11,16 +12,13 @@
     <div class="container">
       <!-- 页面标题 -->
       <header class="header">
-        <h1>
-          <span class="icon">🔀</span>
-          Search Relay 设置
-        </h1>
+        <h1>Search Relay 设置</h1>
         <p class="subtitle">配置搜索引擎跳转规则</p>
       </header>
 
       <!-- 目标搜索引擎选择 -->
       <section class="card">
-        <h2>🎯 当前目标引擎</h2>
+        <h2>当前目标引擎</h2>
         <p class="description">选择点击插件图标时要跳转到的搜索引擎</p>
 
         <div class="form-group">
@@ -44,108 +42,110 @@
 
       <!-- 搜索引擎管理 -->
       <section class="card">
-        <h2>⚙️ 搜索引擎管理</h2>
+        <h2>搜索引擎管理</h2>
         <p class="description">
           管理所有搜索引擎。可设置每个引擎是否作为"目标引擎"（可跳转到）或"源引擎"（可从其提取关键词）。
         </p>
 
-        <!-- 添加/编辑引擎表单 -->
-        <div class="subsection">
-          <h3>➕ 添加/编辑引擎</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="newEngineName">引擎名称</label>
-              <input
-                type="text"
-                id="newEngineName"
-                class="input"
-                placeholder="例如: 哔哩哔哩"
-              />
-            </div>
-            <div class="form-group">
-              <label for="newEngineBadge"
-                >Badge 文字（推荐不超过4个字符）</label
-              >
-              <input
-                type="text"
-                id="newEngineBadge"
-                class="input"
-                placeholder="例如: Bili"
-                maxlength="4"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="newEngineUrl">搜索 URL 模板</label>
-            <input
-              type="text"
-              id="newEngineUrl"
-              class="input"
-              placeholder="例如: https://search.bilibili.com/all?keyword=%s"
-            />
-            <span class="hint"
-              >使用
-              <code>%s</code> 作为关键词占位符，域名和参数名将自动提取</span
-            >
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="newEngineDomain">域名匹配（可选，自动提取）</label>
-              <input
-                type="text"
-                id="newEngineDomain"
-                class="input"
-                placeholder="例如: bilibili.com"
-              />
-              <span class="hint">用于从该搜索引擎页面提取关键词</span>
-            </div>
-            <div class="form-group">
-              <label for="newEngineParam">URL 参数名（可选，自动提取）</label>
-              <input
-                type="text"
-                id="newEngineParam"
-                class="input"
-                placeholder="例如: keyword"
-              />
-              <span class="hint">用于从 URL 中提取搜索关键词</span>
-            </div>
-          </div>
-          <!-- 角色复选框 -->
-          <div class="form-row checkbox-row">
-            <div class="form-group checkbox-group">
-              <label class="checkbox-container">
-                <input type="checkbox" id="newEngineIsTarget" checked />
-                <span class="checkbox-label">作为目标引擎</span>
-              </label>
-              <p class="hint">勾选后可在下拉菜单和右键菜单中选择跳转到此引擎</p>
-            </div>
-            <div class="form-group checkbox-group">
-              <label class="checkbox-container">
-                <input type="checkbox" id="newEngineIsSource" />
-                <span class="checkbox-label">作为源引擎</span>
-              </label>
-              <p class="hint">勾选后可从此引擎的搜索结果页面提取关键词</p>
-            </div>
-          </div>
-          <div class="btn-group">
-            <button id="addEngine" class="btn btn-primary">添加引擎</button>
-            <button
-              id="cancelEditEngine"
-              class="btn btn-secondary"
-              style="display: none"
-            >
-              取消编辑
-            </button>
-          </div>
+        <!-- 引擎列表 -->
+        <div class="subsection mt-0">
+          <div id="engines-grid"></div>
         </div>
 
-        <!-- 引擎列表 -->
-        <div class="subsection">
-          <h3>📋 引擎列表</h3>
-          <div id="enginesList" class="list">
-            <!-- 由 JavaScript 动态填充 -->
+        <!-- 添加/编辑引擎表单 -->
+        <details id="addEngineDetails" class="subsection">
+          <summary>
+            <h3>添加/编辑引擎</h3>
+            <span class="toggle-icon">▼</span>
+          </summary>
+          <div class="card-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newEngineName">引擎名称</label>
+                <input
+                  type="text"
+                  id="newEngineName"
+                  class="input"
+                  placeholder="例如: 哔哩哔哩"
+                />
+              </div>
+              <div class="form-group">
+                <label for="newEngineBadge"
+                  >Badge 文字（推荐不超过4个字符）</label
+                >
+                <input
+                  type="text"
+                  id="newEngineBadge"
+                  class="input"
+                  placeholder="例如: Bili"
+                  maxlength="4"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="newEngineUrl">搜索 URL 模板</label>
+              <input
+                type="text"
+                id="newEngineUrl"
+                class="input"
+                placeholder="例如: https://search.bilibili.com/all?keyword=%s"
+              />
+              <span class="hint"
+                >使用
+                <code>%s</code> 作为关键词占位符，域名和参数名将自动提取</span
+              >
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newEngineDomain">域名匹配（可选，自动提取）</label>
+                <input
+                  type="text"
+                  id="newEngineDomain"
+                  class="input"
+                  placeholder="例如: bilibili.com"
+                />
+                <span class="hint">用于从该搜索引擎页面提取关键词</span>
+              </div>
+              <div class="form-group">
+                <label for="newEngineParam">URL 参数名（可选，自动提取）</label>
+                <input
+                  type="text"
+                  id="newEngineParam"
+                  class="input"
+                  placeholder="例如: keyword"
+                />
+                <span class="hint">用于从 URL 中提取搜索关键词</span>
+              </div>
+            </div>
+            <!-- 角色复选框 -->
+            <div class="form-row checkbox-row">
+              <div class="form-group checkbox-group">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="newEngineIsTarget" checked />
+                  <span class="checkbox-label">作为目标引擎</span>
+                </label>
+                <p class="hint">勾选后可在下拉菜单和右键菜单中选择跳转到此引擎</p>
+              </div>
+              <div class="form-group checkbox-group">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="newEngineIsSource" />
+                  <span class="checkbox-label">作为源引擎</span>
+                </label>
+                <p class="hint">勾选后可从此引擎的搜索结果页面提取关键词</p>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button id="addEngine" class="btn btn-primary">添加引擎</button>
+              <button
+                id="cancelEditEngine"
+                class="btn btn-secondary"
+                style="display: none"
+              >
+                取消编辑
+              </button>
+            </div>
           </div>
-        </div>
+        </details>
       </section>
 
       <!-- 操作按钮 -->
@@ -167,6 +167,7 @@
       </footer>
     </div>
 
+    <script src="libs/gridjs.umd.js"></script>
     <script type="module" src="options.js"></script>
   </body>
 </html>
