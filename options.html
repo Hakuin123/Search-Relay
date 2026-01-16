@@ -1,137 +1,172 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Relay - 设置</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search Relay - 设置</title>
-  <link rel="stylesheet" href="options.css">
-</head>
+  <body>
+    <div class="container">
+      <!-- 页面标题 -->
+      <header class="header">
+        <h1>
+          <span class="icon">🔀</span>
+          Search Relay 设置
+        </h1>
+        <p class="subtitle">配置搜索引擎跳转规则</p>
+      </header>
 
-<body>
-  <div class="container">
-    <!-- 页面标题 -->
-    <header class="header">
-      <h1>
-        <span class="icon">🔀</span>
-        Search Relay 设置
-      </h1>
-      <p class="subtitle">配置搜索引擎跳转规则</p>
-    </header>
+      <!-- 目标搜索引擎选择 -->
+      <section class="card">
+        <h2>🎯 当前目标引擎</h2>
+        <p class="description">选择点击插件图标时要跳转到的搜索引擎</p>
 
-    <!-- 目标搜索引擎配置 -->
-    <section class="card">
-      <h2>🎯 目标搜索引擎</h2>
-      <p class="description">选择点击插件图标时要跳转到的搜索引擎</p>
-
-      <div class="form-group">
-        <label for="targetEngine">当前目标引擎</label>
-        <select id="targetEngine" class="select">
-          <!-- 由 JavaScript 动态填充 -->
-        </select>
-      </div>
-
-      <!-- Badge 显示开关 -->
-      <div class="form-group checkbox-group">
-        <label class="checkbox-container">
-          <input type="checkbox" id="showBadge">
-          <span class="checkbox-label">在图标上显示 Badge 文字</span>
-        </label>
-        <p class="hint">开启后将在插件图标上显示当前搜索引擎的缩写（如：G, B）</p>
-      </div>
-
-      <!-- 添加自定义目标引擎 -->
-      <div class="subsection">
-        <h3>➕ 添加/编辑自定义目标引擎</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="newEngineName">引擎名称</label>
-            <input type="text" id="newEngineName" class="input" placeholder="例如: 哔哩哔哩>
-          </div>
-          <div class="form-group">
-            <label for="newEngineBadge">Badge 文字（推荐不超过4个字符）</label>
-            <input type="text" id="newEngineBadge" class="input" placeholder="例如: Bili" maxlength="4">
-          </div>
-        </div>
         <div class="form-group">
-          <label for="newEngineUrl">搜索 URL 模板</label>
-          <input type="text" id="newEngineUrl" class="input" placeholder="例如: https://search.bilibili.com/all?keyword=%s">
-          <span class="hint">使用 <code>%s</code> 作为关键词占位符</span>
+          <label for="targetEngine">目标引擎</label>
+          <select id="targetEngine" class="select">
+            <!-- 由 JavaScript 动态填充 -->
+          </select>
         </div>
-        <div class="btn-group">
-          <button id="addTargetEngine" class="btn btn-primary">添加目标引擎</button>
-          <button id="cancelEditEngine" class="btn btn-secondary" style="display: none;">取消编辑</button>
+
+        <!-- Badge 显示开关 -->
+        <div class="form-group checkbox-group">
+          <label class="checkbox-container">
+            <input type="checkbox" id="showBadge" />
+            <span class="checkbox-label">在图标上显示 Badge 文字</span>
+          </label>
+          <p class="hint">
+            开启后将在插件图标上显示当前搜索引擎的缩写（如：G, B）
+          </p>
         </div>
-      </div>
+      </section>
 
-      <!-- 已添加的自定义引擎列表 -->
-      <div class="subsection" id="customEnginesSection" style="display: none;">
-        <h3>📋 自定义引擎列表</h3>
-        <div id="customEnginesList" class="list">
-          <!-- 由 JavaScript 动态填充 -->
-        </div>
-      </div>
-    </section>
+      <!-- 搜索引擎管理 -->
+      <section class="card">
+        <h2>⚙️ 搜索引擎管理</h2>
+        <p class="description">
+          管理所有搜索引擎。可设置每个引擎是否作为"目标引擎"（可跳转到）或"源引擎"（可从其提取关键词）。
+        </p>
 
-    <!-- 源搜索引擎规则 -->
-    <section class="card">
-      <details>
-        <summary class="card-header">
-          <div>
-            <h2>📑 源搜索引擎规则</h2>
-            <p class="description">配置从哪些搜索引擎页面提取关键词。当你在这些搜索引擎页面点击插件图标时，会自动提取搜索词并跳转。</p>
-          </div>
-          <span class="toggle-icon">▼</span>
-        </summary>
-
-        <div class="card-content">
-          <!-- 添加新规则 -->
-          <div class="subsection mt-0">
-            <h3>➕ 添加/编辑规则</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="newRuleDomain">域名匹配</label>
-                <input type="text" id="newRuleDomain" class="input" placeholder="例如: baidu.com">
-                <span class="hint">支持子域名匹配，如输入 <code>baidu.com</code> 可匹配 <code>www.baidu.com</code></span>
-              </div>
-              <div class="form-group">
-                <label for="newRuleParam">URL 参数名</label>
-                <input type="text" id="newRuleParam" class="input" placeholder="例如: wd 或 q">
-                <span class="hint">用于从 URL 中提取搜索关键词的参数名</span>
-              </div>
+        <!-- 添加/编辑引擎表单 -->
+        <div class="subsection">
+          <h3>➕ 添加/编辑引擎</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newEngineName">引擎名称</label>
+              <input
+                type="text"
+                id="newEngineName"
+                class="input"
+                placeholder="例如: 哔哩哔哩"
+              />
             </div>
-            <div class="btn-group">
-              <button id="addSourceRule" class="btn btn-primary">添加规则</button>
-              <button id="cancelEditSourceRule" class="btn btn-secondary" style="display: none;">取消编辑</button>
-            </div>
-          </div>
-
-          <!-- 规则列表 -->
-          <div class="subsection">
-            <h3>📋 当前规则列表</h3>
-            <div id="sourceRulesList" class="list">
-              <!-- 由 JavaScript 动态填充 -->
+            <div class="form-group">
+              <label for="newEngineBadge"
+                >Badge 文字（推荐不超过4个字符）</label
+              >
+              <input
+                type="text"
+                id="newEngineBadge"
+                class="input"
+                placeholder="例如: Bili"
+                maxlength="4"
+              />
             </div>
           </div>
+          <div class="form-group">
+            <label for="newEngineUrl">搜索 URL 模板</label>
+            <input
+              type="text"
+              id="newEngineUrl"
+              class="input"
+              placeholder="例如: https://search.bilibili.com/all?keyword=%s"
+            />
+            <span class="hint"
+              >使用
+              <code>%s</code> 作为关键词占位符，域名和参数名将自动提取</span
+            >
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newEngineDomain">域名匹配（可选，自动提取）</label>
+              <input
+                type="text"
+                id="newEngineDomain"
+                class="input"
+                placeholder="例如: bilibili.com"
+              />
+              <span class="hint">用于从该搜索引擎页面提取关键词</span>
+            </div>
+            <div class="form-group">
+              <label for="newEngineParam">URL 参数名（可选，自动提取）</label>
+              <input
+                type="text"
+                id="newEngineParam"
+                class="input"
+                placeholder="例如: keyword"
+              />
+              <span class="hint">用于从 URL 中提取搜索关键词</span>
+            </div>
+          </div>
+          <!-- 角色复选框 -->
+          <div class="form-row checkbox-row">
+            <div class="form-group checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="newEngineIsTarget" checked />
+                <span class="checkbox-label">作为目标引擎</span>
+              </label>
+              <p class="hint">勾选后可在下拉菜单和右键菜单中选择跳转到此引擎</p>
+            </div>
+            <div class="form-group checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="newEngineIsSource" />
+                <span class="checkbox-label">作为源引擎</span>
+              </label>
+              <p class="hint">勾选后可从此引擎的搜索结果页面提取关键词</p>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button id="addEngine" class="btn btn-primary">添加引擎</button>
+            <button
+              id="cancelEditEngine"
+              class="btn btn-secondary"
+              style="display: none"
+            >
+              取消编辑
+            </button>
+          </div>
         </div>
-      </details>
-    </section>
 
-    <!-- 操作按钮 -->
-    <section class="card actions">
-      <button id="resetDefaults" class="btn btn-secondary">恢复默认设置</button>
-      <span id="statusMessage" class="status-message"></span>
-    </section>
+        <!-- 引擎列表 -->
+        <div class="subsection">
+          <h3>📋 引擎列表</h3>
+          <div id="enginesList" class="list">
+            <!-- 由 JavaScript 动态填充 -->
+          </div>
+        </div>
+      </section>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <p>Search Relay v0.1.0 |
-        <a href="https://github.com/Hakuin123/Search-Relay" target="_blank">GitHub</a>
-      </p>
-    </footer>
-  </div>
+      <!-- 操作按钮 -->
+      <section class="card actions">
+        <button id="resetDefaults" class="btn btn-secondary">
+          恢复默认设置
+        </button>
+        <span id="statusMessage" class="status-message"></span>
+      </section>
 
-  <script src="options.js"></script>
-</body>
+      <!-- 页脚 -->
+      <footer class="footer">
+        <p>
+          Search Relay v0.2.0 |
+          <a href="https://github.com/Hakuin123/Search-Relay" target="_blank"
+            >GitHub</a
+          >
+        </p>
+      </footer>
+    </div>
 
+    <script type="module" src="options.js"></script>
+  </body>
 </html>

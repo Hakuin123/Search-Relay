@@ -3,32 +3,10 @@
  * 
  * 功能：
  * 1. 加载和保存用户配置
- * 2. 管理目标搜索引擎
- * 3. 管理源搜索引擎规则
+ * 2. 管理搜索引擎（统一目标引擎和源引擎）
  */
 
-// ============================================
-// 默认配置（与 background.js 保持一致）
-// ============================================
-
-const DEFAULT_TARGET_ENGINES = [
-    { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=%s', badge: 'G', isDefault: true },
-    { id: 'baidu', name: '百度', url: 'https://www.baidu.com/s?wd=%s', badge: 'B', isDefault: true },
-    { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=%s', badge: 'Bing', isDefault: true },
-    { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s', badge: 'D', isDefault: true }
-];
-
-const DEFAULT_SOURCE_RULES = [
-    { domain: 'google.com', param: 'q' },
-    { domain: 'baidu.com', param: 'wd' },
-    { domain: 'bing.com', param: 'q' },
-    { domain: 'cn.bing.com', param: 'q' },
-    { domain: 'duckduckgo.com', param: 'q' },
-    { domain: 'sogou.com', param: 'query' },
-    { domain: 'so.com', param: 'q' },
-    { domain: 'yandex.com', param: 'text' },
-    { domain: 'search.yahoo.com', param: 'p' }
-];
+import { DEFAULT_ENGINES } from './config.js';
 
 // ============================================
 // DOM 元素引用
@@ -39,22 +17,17 @@ const elements = {
     targetEngine: document.getElementById('targetEngine'),
     showBadge: document.getElementById('showBadge'),
 
-    // 添加/编辑自定义目标引擎
+    // 添加/编辑引擎表单
     newEngineName: document.getElementById('newEngineName'),
     newEngineBadge: document.getElementById('newEngineBadge'),
     newEngineUrl: document.getElementById('newEngineUrl'),
-    addTargetEngine: document.getElementById('addTargetEngine'),
+    newEngineDomain: document.getElementById('newEngineDomain'),
+    newEngineParam: document.getElementById('newEngineParam'),
+    newEngineIsTarget: document.getElementById('newEngineIsTarget'),
+    newEngineIsSource: document.getElementById('newEngineIsSource'),
+    addEngine: document.getElementById('addEngine'),
     cancelEditEngine: document.getElementById('cancelEditEngine'),
-    customEnginesSection: document.getElementById('customEnginesSection'),
-    customEnginesList: document.getElementById('customEnginesList'),
-
-    // 添加/编辑源规则
-    newRuleDomain: document.getElementById('newRuleDomain'),
-    newRuleParam: document.getElementById('newRuleParam'),
-    addSourceRule: document.getElementById('addSourceRule'),
-    cancelEditSourceRule: document.getElementById('cancelEditSourceRule'),
-    sourceRulesList: document.getElementById('sourceRulesList'),
-    sourceRulesDetails: document.querySelector('details'),
+    enginesList: document.getElementById('enginesList'),
 
     // 其他
     resetDefaults: document.getElementById('resetDefaults'),
@@ -67,13 +40,10 @@ const elements = {
 
 let state = {
     targetEngine: 'google',
-    showBadge: false, // 默认关闭
-    targetEngines: [...DEFAULT_TARGET_ENGINES],
-    sourceRules: [...DEFAULT_SOURCE_RULES]
+    showBadge: false,
+    engines: [...DEFAULT_ENGINES]
 };
 
-// 当前正在编辑的规则索引，-1 表示添加新规则
-let editingRuleIndex = -1;
 // 当前正在编辑的引擎ID，null 表示添加新引擎
 let editingEngineId = null;
 
@@ -92,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function loadSettings() {
     try {
-        const stored = await chrome.storage.sync.get(['targetEngine', 'targetEngines', 'sourceRules']);
+        const stored = await chrome.storage.sync.get(['targetEngine', 'showBadge', 'engines']);
 
         if (stored.targetEngine) {
             state.targetEngine = stored.targetEngine;
@@ -100,11 +70,8 @@ async function loadSettings() {
         if (typeof stored.showBadge !== 'undefined') {
             state.showBadge = stored.showBadge;
         }
-        if (stored.targetEngines && stored.targetEngines.length > 0) {
-            state.targetEngines = stored.targetEngines;
-        }
-        if (stored.sourceRules && stored.sourceRules.length > 0) {
-            state.sourceRules = stored.sourceRules;
+        if (stored.engines && stored.engines.length > 0) {
+            state.engines = stored.engines;
         }
 
         console.log('[Search Relay Options] 配置已加载:', state);
@@ -121,8 +88,7 @@ async function saveSettings() {
         await chrome.storage.sync.set({
             targetEngine: state.targetEngine,
             showBadge: state.showBadge,
-            targetEngines: state.targetEngines,
-            sourceRules: state.sourceRules
+            engines: state.engines
         });
 
         showStatus('✓ 设置已保存');
@@ -150,20 +116,57 @@ function bindEvents() {
         await saveSettings();
     });
 
-    // 添加/保存自定义目标引擎
-    elements.addTargetEngine.addEventListener('click', handleCustomEngineSubmit);
+    // URL 输入变化时自动提取 domain 和 param
+    elements.newEngineUrl.addEventListener('input', handleUrlInput);
 
-    // 取消编辑自定义目标引擎
-    elements.cancelEditEngine.addEventListener('click', resetEngineEditState);
+    // 添加/保存引擎
+    elements.addEngine.addEventListener('click', handleEngineSubmit);
 
-    // 添加/保存源规则
-    elements.addSourceRule.addEventListener('click', handleSourceRuleSubmit);
-
-    // 取消编辑源规则
-    elements.cancelEditSourceRule.addEventListener('click', resetEditState);
+    // 取消编辑
+    elements.cancelEditEngine.addEventListener('click', resetEditState);
 
     // 恢复默认设置
     elements.resetDefaults.addEventListener('click', resetToDefaults);
+}
+
+/**
+ * 处理 URL 输入，自动提取 domain 和 param
+ */
+function handleUrlInput() {
+    const urlValue = elements.newEngineUrl.value.trim();
+
+    if (!urlValue) {
+        return;
+    }
+
+    try {
+        // 临时替换 %s 以便解析 URL
+        const testUrl = urlValue.replace('%s', 'TEST_KEYWORD');
+        const url = new URL(testUrl);
+
+        // 自动提取 domain（如果用户没有手动填写）
+        if (!elements.newEngineDomain.value.trim()) {
+            // 移除 www. 前缀
+            let domain = url.hostname;
+            if (domain.startsWith('www.')) {
+                domain = domain.substring(4);
+            }
+            elements.newEngineDomain.value = domain;
+        }
+
+        // 自动提取 param（如果用户没有手动填写）
+        if (!elements.newEngineParam.value.trim()) {
+            // 找到值为 TEST_KEYWORD 的参数
+            for (const [key, value] of url.searchParams) {
+                if (value === 'TEST_KEYWORD') {
+                    elements.newEngineParam.value = key;
+                    break;
+                }
+            }
+        }
+    } catch (e) {
+        // URL 解析失败，忽略
+    }
 }
 
 // ============================================
@@ -176,8 +179,7 @@ function bindEvents() {
 function renderAll() {
     renderSettings();
     renderTargetEngineSelect();
-    renderCustomEnginesList();
-    renderSourceRulesList();
+    renderEnginesList();
 }
 
 /**
@@ -188,110 +190,87 @@ function renderSettings() {
 }
 
 /**
- * 渲染目标引擎下拉选择框
+ * 渲染目标引擎下拉选择框（仅显示 isTarget: true 的引擎）
  */
 function renderTargetEngineSelect() {
     elements.targetEngine.innerHTML = '';
 
-    state.targetEngines.forEach(engine => {
+    const targetEngines = state.engines.filter(e => e.isTarget);
+
+    if (targetEngines.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = '（无可用目标引擎）';
+        option.disabled = true;
+        elements.targetEngine.appendChild(option);
+        return;
+    }
+
+    targetEngines.forEach(engine => {
         const option = document.createElement('option');
         option.value = engine.id;
         option.textContent = `${engine.name} (${engine.badge})`;
         option.selected = engine.id === state.targetEngine;
         elements.targetEngine.appendChild(option);
     });
+
+    // 如果当前选中的引擎不在目标列表中，自动切换到第一个
+    if (!targetEngines.find(e => e.id === state.targetEngine) && targetEngines.length > 0) {
+        state.targetEngine = targetEngines[0].id;
+        saveSettings();
+    }
 }
 
 /**
- * 渲染自定义引擎列表（仅显示用户添加的引擎）
+ * 渲染引擎列表
  */
-function renderCustomEnginesList() {
-    // 过滤出用户添加的自定义引擎
-    const customEngines = state.targetEngines.filter(e => !e.isDefault);
+function renderEnginesList() {
+    elements.enginesList.innerHTML = '';
 
-    if (customEngines.length === 0) {
-        elements.customEnginesSection.style.display = 'none';
+    if (state.engines.length === 0) {
+        elements.enginesList.innerHTML = '<div class="list-empty">暂无引擎</div>';
         return;
     }
 
-    elements.customEnginesSection.style.display = 'block';
-    elements.customEnginesList.innerHTML = '';
-
-    customEngines.forEach(engine => {
-        const item = createListItem({
-            badge: engine.badge,
-            title: engine.name,
-            subtitle: engine.url,
-            onDelete: () => deleteTargetEngine(engine.id),
-            onEdit: () => startEditCustomEngine(engine.id)
-        });
-        elements.customEnginesList.appendChild(item);
+    state.engines.forEach(engine => {
+        const item = createEngineListItem(engine);
+        elements.enginesList.appendChild(item);
     });
 }
 
 /**
- * 渲染源规则列表
- */
-function renderSourceRulesList() {
-    elements.sourceRulesList.innerHTML = '';
-
-    if (state.sourceRules.length === 0) {
-        elements.sourceRulesList.innerHTML = '<div class="list-empty">暂无规则</div>';
-        return;
-    }
-
-    state.sourceRules.forEach((rule, index) => {
-        const item = createListItem({
-            badge: rule.param,
-            title: rule.domain,
-            subtitle: `参数: ${rule.param}`,
-            onDelete: () => deleteSourceRule(index),
-            onEdit: () => startEditSourceRule(index)
-        });
-        elements.sourceRulesList.appendChild(item);
-    });
-}
-
-/**
- * 创建列表项 DOM 元素
+ * 创建引擎列表项 DOM 元素
  * 
- * @param {Object} options - 列表项配置
- * @param {string} options.badge - Badge 文字
- * @param {string} options.title - 标题
- * @param {string} options.subtitle - 副标题
- * @param {Function} options.onDelete - 删除回调
- * @param {Function} [options.onEdit] - 编辑回调（可选）
+ * @param {Object} engine - 引擎对象
  * @returns {HTMLElement} 列表项元素
  */
-function createListItem({ badge, title, subtitle, onDelete, onEdit }) {
+function createEngineListItem(engine) {
     const item = document.createElement('div');
     item.className = 'list-item';
 
-    let actionsHtml = '';
-    if (onEdit) {
-        actionsHtml += `<button class="btn btn-secondary btn-sm edit-btn">编辑</button>`;
-    }
-    actionsHtml += `<button class="btn btn-danger btn-sm delete-btn">删除</button>`;
+    // 生成角色标签
+    const roles = [];
+    if (engine.isTarget) roles.push('目标');
+    if (engine.isSource) roles.push('源');
+    const roleText = roles.length > 0 ? roles.join(' / ') : '未启用';
 
     item.innerHTML = `
     <div class="list-item-content">
-      <span class="list-item-badge">${escapeHtml(badge)}</span>
+      <span class="list-item-badge">${escapeHtml(engine.badge)}</span>
       <div class="list-item-info">
-        <div class="list-item-title">${escapeHtml(title)}</div>
-        <div class="list-item-subtitle">${escapeHtml(subtitle)}</div>
+        <div class="list-item-title">${escapeHtml(engine.name)} <span class="role-tag">${escapeHtml(roleText)}</span></div>
+        <div class="list-item-subtitle">${escapeHtml(engine.domain || '无域名')} · 参数: ${escapeHtml(engine.param || '无')}</div>
       </div>
     </div>
     <div class="list-item-actions">
-      ${actionsHtml}
+      <button class="btn btn-secondary btn-sm edit-btn">编辑</button>
+      <button class="btn btn-danger btn-sm delete-btn">删除</button>
     </div>
   `;
 
     // 绑定事件
-    item.querySelector('.delete-btn').addEventListener('click', onDelete);
-
-    if (onEdit) {
-        item.querySelector('.edit-btn').addEventListener('click', onEdit);
-    }
+    item.querySelector('.edit-btn').addEventListener('click', () => startEditEngine(engine.id));
+    item.querySelector('.delete-btn').addEventListener('click', () => deleteEngine(engine.id));
 
     return item;
 }
@@ -301,12 +280,16 @@ function createListItem({ badge, title, subtitle, onDelete, onEdit }) {
 // ============================================
 
 /**
- * 处理自定义目标引擎提交
+ * 处理引擎提交（添加或更新）
  */
-async function handleCustomEngineSubmit() {
+async function handleEngineSubmit() {
     const name = elements.newEngineName.value.trim();
     const badge = elements.newEngineBadge.value.trim() || name.charAt(0);
     const url = elements.newEngineUrl.value.trim();
+    const domain = elements.newEngineDomain.value.trim();
+    const param = elements.newEngineParam.value.trim();
+    const isTarget = elements.newEngineIsTarget.checked;
+    const isSource = elements.newEngineIsSource.checked;
 
     // 验证输入
     if (!name) {
@@ -327,25 +310,35 @@ async function handleCustomEngineSubmit() {
         return;
     }
 
+    if (!isTarget && !isSource) {
+        showStatus('至少需要勾选一个角色（目标引擎或源引擎）', true);
+        return;
+    }
+
+    const engineData = {
+        name,
+        badge,
+        url,
+        domain,
+        param,
+        isTarget,
+        isSource
+    };
+
     if (editingEngineId === null) {
         // === 添加新引擎 ===
         const id = 'custom_' + Date.now();
-        state.targetEngines.push({
+        state.engines.push({
             id,
-            name,
-            badge,
-            url,
-            isDefault: false
+            ...engineData
         });
     } else {
         // === 更新现有引擎 ===
-        const index = state.targetEngines.findIndex(e => e.id === editingEngineId);
+        const index = state.engines.findIndex(e => e.id === editingEngineId);
         if (index !== -1) {
-            state.targetEngines[index] = {
-                ...state.targetEngines[index],
-                name,
-                badge,
-                url
+            state.engines[index] = {
+                ...state.engines[index],
+                ...engineData
             };
         }
     }
@@ -353,15 +346,15 @@ async function handleCustomEngineSubmit() {
     // 保存并刷新 UI
     await saveSettings();
     renderAll();
-    resetEngineEditState();
+    resetEditState();
 }
 
 /**
- * 开始编辑自定义目标引擎
+ * 开始编辑引擎
  * @param {string} id - 引擎 ID
  */
-function startEditCustomEngine(id) {
-    const engine = state.targetEngines.find(e => e.id === id);
+function startEditEngine(id) {
+    const engine = state.engines.find(e => e.id === id);
     if (!engine) return;
 
     editingEngineId = id;
@@ -370,9 +363,13 @@ function startEditCustomEngine(id) {
     elements.newEngineName.value = engine.name;
     elements.newEngineBadge.value = engine.badge;
     elements.newEngineUrl.value = engine.url;
+    elements.newEngineDomain.value = engine.domain || '';
+    elements.newEngineParam.value = engine.param || '';
+    elements.newEngineIsTarget.checked = engine.isTarget;
+    elements.newEngineIsSource.checked = engine.isSource;
 
     // 更新按钮状态
-    elements.addTargetEngine.textContent = '保存修改';
+    elements.addEngine.textContent = '保存修改';
     elements.cancelEditEngine.style.display = 'inline-flex';
 
     // 聚焦
@@ -381,142 +378,50 @@ function startEditCustomEngine(id) {
 }
 
 /**
- * 重置引擎编辑状态
+ * 重置编辑状态
  */
-function resetEngineEditState() {
+function resetEditState() {
     editingEngineId = null;
 
     // 清空表单
     elements.newEngineName.value = '';
     elements.newEngineBadge.value = '';
     elements.newEngineUrl.value = '';
+    elements.newEngineDomain.value = '';
+    elements.newEngineParam.value = '';
+    elements.newEngineIsTarget.checked = true;
+    elements.newEngineIsSource.checked = false;
 
     // 恢复按钮状态
-    elements.addTargetEngine.textContent = '添加目标引擎';
+    elements.addEngine.textContent = '添加引擎';
     elements.cancelEditEngine.style.display = 'none';
 }
 
 /**
- * 删除目标引擎
+ * 删除引擎
  * 
  * @param {string} engineId - 引擎 ID
  */
-async function deleteTargetEngine(engineId) {
+async function deleteEngine(engineId) {
     if (editingEngineId === engineId) {
-        resetEngineEditState();
+        resetEditState();
     }
 
     // 过滤掉要删除的引擎
-    state.targetEngines = state.targetEngines.filter(e => e.id !== engineId);
+    state.engines = state.engines.filter(e => e.id !== engineId);
 
-    // 如果删除的是当前选中的引擎，切换到第一个
-    if (state.targetEngine === engineId && state.targetEngines.length > 0) {
-        state.targetEngine = state.targetEngines[0].id;
+    // 如果删除的是当前选中的目标引擎，切换到第一个目标引擎
+    if (state.targetEngine === engineId) {
+        const targetEngines = state.engines.filter(e => e.isTarget);
+        if (targetEngines.length > 0) {
+            state.targetEngine = targetEngines[0].id;
+        } else {
+            state.targetEngine = '';
+        }
     }
 
     await saveSettings();
     renderAll();
-}
-
-/**
- * 处理源规则提交（添加或保存修改）
- */
-async function handleSourceRuleSubmit() {
-    const domain = elements.newRuleDomain.value.trim().toLowerCase();
-    const param = elements.newRuleParam.value.trim();
-
-    // 验证输入
-    if (!domain) {
-        showStatus('请输入域名', true);
-        elements.newRuleDomain.focus();
-        return;
-    }
-
-    if (!param) {
-        showStatus('请输入参数名', true);
-        elements.newRuleParam.focus();
-        return;
-    }
-
-    if (editingRuleIndex === -1) {
-        // === 添加新规则 ===
-        const exists = state.sourceRules.some(r => r.domain === domain);
-        if (exists) {
-            showStatus('该域名规则已存在', true);
-            return;
-        }
-        state.sourceRules.push({ domain, param });
-    } else {
-        // === 更新现有规则 ===
-        const exists = state.sourceRules.some((r, idx) => r.domain === domain && idx !== editingRuleIndex);
-        if (exists) {
-            showStatus('该域名规则已存在', true);
-            return;
-        }
-        state.sourceRules[editingRuleIndex] = { domain, param };
-    }
-
-    await saveSettings();
-    renderSourceRulesList();
-    resetEditState();
-}
-
-/**
- * 开始编辑源规则
- * @param {number} index - 规则索引
- */
-function startEditSourceRule(index) {
-    const rule = state.sourceRules[index];
-    if (!rule) return;
-
-    editingRuleIndex = index;
-
-    // 填充表单
-    elements.newRuleDomain.value = rule.domain;
-    elements.newRuleParam.value = rule.param;
-
-    // 更新按钮状态
-    elements.addSourceRule.textContent = '保存修改';
-    elements.cancelEditSourceRule.style.display = 'inline-flex';
-
-    if (elements.sourceRulesDetails && !elements.sourceRulesDetails.open) {
-        elements.sourceRulesDetails.open = true;
-    }
-
-    elements.newRuleDomain.focus();
-    elements.newRuleDomain.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-/**
- * 重置编辑状态
- */
-function resetEditState() {
-    editingRuleIndex = -1;
-
-    // 清空表单
-    elements.newRuleDomain.value = '';
-    elements.newRuleParam.value = '';
-
-    // 恢复按钮状态
-    elements.addSourceRule.textContent = '添加规则';
-    elements.cancelEditSourceRule.style.display = 'none';
-}
-
-/**
- * 删除源规则
- * 
- * @param {number} index - 规则索引
- */
-async function deleteSourceRule(index) {
-    if (editingRuleIndex === index) {
-        resetEditState();
-    } else if (editingRuleIndex > index) {
-        editingRuleIndex--;
-    }
-
-    state.sourceRules.splice(index, 1);
-    await saveSettings();
-    renderSourceRulesList();
 }
 
 /**
@@ -530,12 +435,10 @@ async function resetToDefaults() {
     state = {
         targetEngine: 'google',
         showBadge: false,
-        targetEngines: [...DEFAULT_TARGET_ENGINES],
-        sourceRules: [...DEFAULT_SOURCE_RULES]
+        engines: [...DEFAULT_ENGINES]
     };
 
     resetEditState();
-    resetEngineEditState();
     await saveSettings();
     renderAll();
     showStatus('已恢复默认设置');

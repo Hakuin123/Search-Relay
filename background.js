@@ -7,30 +7,7 @@
  * 3. Fallback - 弹窗询问搜索词
  */
 
-// ============================================
-// 默认配置
-// ============================================
-
-/** 默认的目标搜索引擎列表 */
-const DEFAULT_TARGET_ENGINES = [
-  { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=%s', badge: 'G' },
-  { id: 'baidu', name: '百度', url: 'https://www.baidu.com/s?wd=%s', badge: 'B' },
-  { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=%s', badge: 'Bi' },
-  { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s', badge: 'D' }
-];
-
-/** 默认的源搜索引擎规则（用于提取关键词） */
-const DEFAULT_SOURCE_RULES = [
-  { domain: 'google.com', param: 'q' },
-  { domain: 'baidu.com', param: 'wd' },
-  { domain: 'bing.com', param: 'q' },
-  { domain: 'cn.bing.com', param: 'q' },
-  { domain: 'duckduckgo.com', param: 'q' },
-  { domain: 'sogou.com', param: 'query' },
-  { domain: 'so.com', param: 'q' },
-  { domain: 'yandex.com', param: 'text' },
-  { domain: 'search.yahoo.com', param: 'p' }
-];
+import { DEFAULT_ENGINES } from './config.js';
 
 // ============================================
 // 初始化
@@ -43,15 +20,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('[Search Relay] 扩展已安装/更新:', details.reason);
 
   // 获取现有配置
-  const stored = await chrome.storage.sync.get(['targetEngine', 'targetEngines', 'sourceRules']);
+  const stored = await chrome.storage.sync.get(['targetEngine', 'engines']);
 
   // 如果没有配置，则写入默认值
-  if (!stored.targetEngines || stored.targetEngines.length === 0) {
+  if (!stored.engines || stored.engines.length === 0) {
     await chrome.storage.sync.set({
       targetEngine: 'google',
-      showBadge: false, // 默认关闭
-      targetEngines: DEFAULT_TARGET_ENGINES,
-      sourceRules: DEFAULT_SOURCE_RULES
+      showBadge: false,
+      engines: DEFAULT_ENGINES
     });
     console.log('[Search Relay] 已写入默认配置');
   }
@@ -78,9 +54,9 @@ chrome.runtime.onStartup.addListener(async () => {
  */
 async function updateBadge() {
   try {
-    const { targetEngine, targetEngines, showBadge } = await chrome.storage.sync.get(['targetEngine', 'targetEngines', 'showBadge']);
+    const { targetEngine, engines, showBadge } = await chrome.storage.sync.get(['targetEngine', 'engines', 'showBadge']);
 
-    if (!targetEngines || !targetEngine) {
+    if (!engines || !targetEngine) {
       return;
     }
 
@@ -90,7 +66,7 @@ async function updateBadge() {
       return;
     }
 
-    const engine = targetEngines.find(e => e.id === targetEngine);
+    const engine = engines.find(e => e.id === targetEngine);
 
     if (engine) {
       await chrome.action.setBadgeText({ text: engine.badge || engine.name.charAt(0) });
@@ -108,8 +84,16 @@ async function updateContextMenus() {
     // 清除现有菜单
     await chrome.contextMenus.removeAll();
 
-    const { targetEngines } = await chrome.storage.sync.get(['targetEngines']);
-    const engines = targetEngines || DEFAULT_TARGET_ENGINES;
+    const { engines } = await chrome.storage.sync.get(['engines']);
+    const allEngines = engines || DEFAULT_ENGINES;
+
+    // 筛选出作为目标引擎的引擎
+    const targetEngines = allEngines.filter(e => e.isTarget);
+
+    if (targetEngines.length === 0) {
+      console.log('[Search Relay] 没有可用的目标引擎，跳过菜单创建');
+      return;
+    }
 
     // 创建父菜单
     chrome.contextMenus.create({
@@ -118,8 +102,8 @@ async function updateContextMenus() {
       contexts: ["action", "selection"]
     });
 
-    // 为每个引擎创建子菜单
-    engines.forEach(engine => {
+    // 为每个目标引擎创建子菜单
+    targetEngines.forEach(engine => {
       chrome.contextMenus.create({
         id: `engine_${engine.id}`,
         parentId: "search_relay_root",
@@ -139,10 +123,10 @@ async function updateContextMenus() {
  */
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'sync') {
-    if (changes.targetEngine || changes.targetEngines || changes.showBadge) {
+    if (changes.targetEngine || changes.engines || changes.showBadge) {
       updateBadge();
     }
-    if (changes.targetEngines) {
+    if (changes.engines) {
       updateContextMenus();
     }
   }
@@ -191,7 +175,7 @@ async function handleSearchAction(tab, specificEngineId = null) {
 
     if (keyword) {
       console.log('[Search Relay] 从URL提取到关键词:', keyword);
-      // 注意：如果只是点击图标跳转，逻辑是提取关键词->用目标引擎搜。
+      // 注意：如果只是点击图标跳转，逻辑是提取关键词-> 用目标引擎搜。
       // 右键菜单同理。
       await performSearch(keyword, specificEngineId);
       return;
@@ -247,12 +231,15 @@ async function extractKeywordFromUrl(urlString) {
     const url = new URL(urlString);
     const hostname = url.hostname;
 
-    const { sourceRules } = await chrome.storage.sync.get(['sourceRules']);
-    const rules = sourceRules || DEFAULT_SOURCE_RULES;
+    const { engines } = await chrome.storage.sync.get(['engines']);
+    const allEngines = engines || DEFAULT_ENGINES;
 
-    for (const rule of rules) {
-      if (hostname === rule.domain || hostname.endsWith('.' + rule.domain)) {
-        const keyword = url.searchParams.get(rule.param);
+    // 筛选出作为源引擎的引擎
+    const sourceEngines = allEngines.filter(e => e.isSource);
+
+    for (const engine of sourceEngines) {
+      if (hostname === engine.domain || hostname.endsWith('.' + engine.domain)) {
+        const keyword = url.searchParams.get(engine.param);
         if (keyword) {
           return keyword;
         }
@@ -272,13 +259,14 @@ async function extractKeywordFromUrl(urlString) {
  */
 async function performSearch(keyword, specificEngineId = null) {
   try {
-    const { targetEngine, targetEngines } = await chrome.storage.sync.get(['targetEngine', 'targetEngines']);
-    const engines = targetEngines || DEFAULT_TARGET_ENGINES;
+    const { targetEngine, engines } = await chrome.storage.sync.get(['targetEngine', 'engines']);
+    const allEngines = engines || DEFAULT_ENGINES;
 
     // 确定使用的引擎 ID
     const engineId = specificEngineId || targetEngine || 'google';
 
-    const engine = engines.find(e => e.id === engineId);
+    // 从所有引擎中查找（不仅限于 isTarget，因为可能通过右键菜单临时选择）
+    const engine = allEngines.find(e => e.id === engineId);
 
     if (!engine) {
       console.error('[Search Relay] 未找到目标搜索引擎配置:', engineId);
