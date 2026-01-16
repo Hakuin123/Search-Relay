@@ -31,22 +31,31 @@
         </select>
       </div>
 
+      <!-- Badge 显示开关 -->
+      <div class="form-group checkbox-group">
+        <label class="checkbox-container">
+          <input type="checkbox" id="showBadge">
+          <span class="checkbox-label">在图标上显示 Badge 文字</span>
+        </label>
+        <p class="hint">开启后将在插件图标上显示当前搜索引擎的缩写（如：G, B）</p>
+      </div>
+
       <!-- 添加自定义目标引擎 -->
       <div class="subsection">
         <h3>➕ 添加/编辑自定义目标引擎</h3>
         <div class="form-row">
           <div class="form-group">
             <label for="newEngineName">引擎名称</label>
-            <input type="text" id="newEngineName" class="input" placeholder="例如: 必应">
+            <input type="text" id="newEngineName" class="input" placeholder="例如: 哔哩哔哩>
           </div>
           <div class="form-group">
-            <label for="newEngineBadge">Badge 文字</label>
-            <input type="text" id="newEngineBadge" class="input" placeholder="例如: Bi" maxlength="4">
+            <label for="newEngineBadge">Badge 文字（推荐不超过4个字符）</label>
+            <input type="text" id="newEngineBadge" class="input" placeholder="例如: Bili" maxlength="4">
           </div>
         </div>
         <div class="form-group">
           <label for="newEngineUrl">搜索 URL 模板</label>
-          <input type="text" id="newEngineUrl" class="input" placeholder="例如: https://www.bing.com/search?q=%s">
+          <input type="text" id="newEngineUrl" class="input" placeholder="例如: https://search.bilibili.com/all?keyword=%s">
           <span class="hint">使用 <code>%s</code> 作为关键词占位符</span>
         </div>
         <div class="btn-group">

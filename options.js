@@ -14,13 +14,12 @@
 const DEFAULT_TARGET_ENGINES = [
     { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=%s', badge: 'G', isDefault: true },
     { id: 'baidu', name: '百度', url: 'https://www.baidu.com/s?wd=%s', badge: 'B', isDefault: true },
-    { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=%s', badge: 'Bi', isDefault: true },
+    { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=%s', badge: 'Bing', isDefault: true },
     { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s', badge: 'D', isDefault: true }
 ];
 
 const DEFAULT_SOURCE_RULES = [
     { domain: 'google.com', param: 'q' },
-    { domain: 'google.com.hk', param: 'q' },
     { domain: 'baidu.com', param: 'wd' },
     { domain: 'bing.com', param: 'q' },
     { domain: 'cn.bing.com', param: 'q' },
@@ -38,6 +37,7 @@ const DEFAULT_SOURCE_RULES = [
 const elements = {
     // 目标引擎选择
     targetEngine: document.getElementById('targetEngine'),
+    showBadge: document.getElementById('showBadge'),
 
     // 添加/编辑自定义目标引擎
     newEngineName: document.getElementById('newEngineName'),
@@ -67,6 +67,7 @@ const elements = {
 
 let state = {
     targetEngine: 'google',
+    showBadge: false, // 默认关闭
     targetEngines: [...DEFAULT_TARGET_ENGINES],
     sourceRules: [...DEFAULT_SOURCE_RULES]
 };
@@ -96,6 +97,9 @@ async function loadSettings() {
         if (stored.targetEngine) {
             state.targetEngine = stored.targetEngine;
         }
+        if (typeof stored.showBadge !== 'undefined') {
+            state.showBadge = stored.showBadge;
+        }
         if (stored.targetEngines && stored.targetEngines.length > 0) {
             state.targetEngines = stored.targetEngines;
         }
@@ -116,6 +120,7 @@ async function saveSettings() {
     try {
         await chrome.storage.sync.set({
             targetEngine: state.targetEngine,
+            showBadge: state.showBadge,
             targetEngines: state.targetEngines,
             sourceRules: state.sourceRules
         });
@@ -136,6 +141,12 @@ function bindEvents() {
     // 目标引擎选择变化
     elements.targetEngine.addEventListener('change', async (e) => {
         state.targetEngine = e.target.value;
+        await saveSettings();
+    });
+
+    // Badge 显示开关
+    elements.showBadge.addEventListener('change', async (e) => {
+        state.showBadge = e.target.checked;
         await saveSettings();
     });
 
@@ -163,9 +174,17 @@ function bindEvents() {
  * 渲染所有 UI 组件
  */
 function renderAll() {
+    renderSettings();
     renderTargetEngineSelect();
     renderCustomEnginesList();
     renderSourceRulesList();
+}
+
+/**
+ * 渲染基本设置
+ */
+function renderSettings() {
+    elements.showBadge.checked = state.showBadge;
 }
 
 /**
@@ -510,6 +529,7 @@ async function resetToDefaults() {
 
     state = {
         targetEngine: 'google',
+        showBadge: false,
         targetEngines: [...DEFAULT_TARGET_ENGINES],
         sourceRules: [...DEFAULT_SOURCE_RULES]
     };

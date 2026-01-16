@@ -282,6 +282,35 @@ details[open] .toggle-icon {
   font-size: 11px;
 }
 
+/* 复选框样式 */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin-right: 10px;
+  accent-color: var(--accent-color);
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
 /* ============================================
    按钮样式
    ============================================ */

@@ -22,7 +22,6 @@ const DEFAULT_TARGET_ENGINES = [
 /** 默认的源搜索引擎规则（用于提取关键词） */
 const DEFAULT_SOURCE_RULES = [
   { domain: 'google.com', param: 'q' },
-  { domain: 'google.com.hk', param: 'q' },
   { domain: 'baidu.com', param: 'wd' },
   { domain: 'bing.com', param: 'q' },
   { domain: 'cn.bing.com', param: 'q' },
@@ -50,6 +49,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (!stored.targetEngines || stored.targetEngines.length === 0) {
     await chrome.storage.sync.set({
       targetEngine: 'google',
+      showBadge: false, // 默认关闭
       targetEngines: DEFAULT_TARGET_ENGINES,
       sourceRules: DEFAULT_SOURCE_RULES
     });
@@ -78,9 +78,15 @@ chrome.runtime.onStartup.addListener(async () => {
  */
 async function updateBadge() {
   try {
-    const { targetEngine, targetEngines } = await chrome.storage.sync.get(['targetEngine', 'targetEngines']);
+    const { targetEngine, targetEngines, showBadge } = await chrome.storage.sync.get(['targetEngine', 'targetEngines', 'showBadge']);
 
     if (!targetEngines || !targetEngine) {
+      return;
+    }
+
+    // 如果设置关闭，则清除 Badge
+    if (!showBadge) {
+      await chrome.action.setBadgeText({ text: '' });
       return;
     }
 
@@ -88,7 +94,6 @@ async function updateBadge() {
 
     if (engine) {
       await chrome.action.setBadgeText({ text: engine.badge || engine.name.charAt(0) });
-      await chrome.action.setBadgeBackgroundColor({ color: '#4285f4' });
     }
   } catch (error) {
     console.error('[Search Relay] 更新 Badge 失败:', error);
@@ -134,7 +139,7 @@ async function updateContextMenus() {
  */
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'sync') {
-    if (changes.targetEngine || changes.targetEngines) {
+    if (changes.targetEngine || changes.targetEngines || changes.showBadge) {
       updateBadge();
     }
     if (changes.targetEngines) {
