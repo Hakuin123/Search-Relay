@@ -110,7 +110,7 @@ async function updateContextMenus() {
     chrome.contextMenus.create({
       id: "search_relay_root",
       title: "使用 Search Relay 搜索",
-      contexts: ["action", "page", "selection"]
+      contexts: ["action", "selection"]
     });
 
     // 为每个引擎创建子菜单
@@ -119,7 +119,7 @@ async function updateContextMenus() {
         id: `engine_${engine.id}`,
         parentId: "search_relay_root",
         title: `使用 ${engine.name} 搜索`,
-        contexts: ["action", "page", "selection"]
+        contexts: ["action", "selection"]
       });
     });
 
@@ -198,13 +198,13 @@ async function handleSearchAction(tab, specificEngineId = null) {
       console.log('[Search Relay] 无选中文字且非搜索引擎页面，显示弹窗');
       await showPromptDialog(tab.id, specificEngineId);
     } catch (e) {
-      console.error('[Search Relay] 无法显示弹窗:', e);
+      console.warn('[Search Relay] 无法显示弹窗:', e);
       // 极端情况：无法注入脚本的页面。可以直接打开空的目标搜索引擎主页？
       // 暂时不做额外处理，避免打扰。
     }
 
   } catch (error) {
-    console.error('[Search Relay] 执行搜索流程出错:', error);
+    console.warn('[Search Relay] 执行搜索流程出错:', error);
   }
 }
 
