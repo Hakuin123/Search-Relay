@@ -120,6 +120,12 @@ body {
   gap: 12px;
 }
 
+.header .logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
 .header .subtitle {
   margin-top: 8px;
   color: var(--text-secondary);
