@@ -111,5 +111,25 @@ export const DEFAULT_ENGINES = [
     param: 'q',
     isTarget: false,
     isSource: true
-  }
+  },
+  {
+    id: 'google_translate',
+    name: 'Google Translate',
+    url: 'https://translate.google.com/?sl=auto&text=%s&op=translate',
+    badge: 'GT',
+    domain: 'translate.google.com',
+    param: 'text',
+    isTarget: false,
+    isSource: true
+  },
+  {
+    id: 'baidu_translate',
+    name: '百度翻译',
+    url: 'https://fanyi.baidu.com/#auto/zh/%s',
+    badge: '翻译',
+    domain: 'fanyi.baidu.com',
+    param: 'text',
+    isTarget: false,
+    isSource: true
+  },
 ];
