@@ -62,7 +62,8 @@ Search Relay 会**自动提取搜索关键词**
 本扩展**不收集任何用户数据**。Search Relay 仅利用浏览器本地存储保存您的设置和搜索引擎数据，不会传输或收集任何私人浏览信息。
 
 ## 开源许可证
-
 GNU General Public License v3.0
 
 > 我们希望通过GPLv3许可证，确保 Search Relay 及其衍生作品始终保持开源，以更好地保护用户隐私。
+
+Search Relay 的图标采用了 [icon8](https://icons8.com/icon/WwWusvLMTFd7/search) 的素材
