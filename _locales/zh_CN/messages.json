@@ -3,10 +3,10 @@
     "message": "Search Relay"
   },
   "extDescription": {
-    "message": "快速在不同搜索引擎之间跳转搜索关键词。支持划词搜索和从搜索页面提取关键词"
+    "message": "快速在不同搜索引擎之间跳转/比对搜索结果，支持划词搜索、右键菜单搜索，以及从当前搜索结果页一键提取关键词跳转到其他引擎"
   },
   "extActionTitle": {
-    "message": "Search Relay - 点击执行搜索跳转"
+    "message": "Search Relay - 搜索引擎快捷切换"
   },
   "generalSettings": {
     "message": "通用设置"
