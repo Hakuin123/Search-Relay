@@ -1,1 +1,4 @@
 *.af
+icon1024.png
+web-ext-artifacts/
+.gitignore
