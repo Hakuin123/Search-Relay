@@ -8,6 +8,8 @@
 
 import { DEFAULT_ENGINES } from './config.js';
 
+// i18n() 函数由 i18n-helper.js 提供
+
 // ============================================
 // DOM 元素引用
 // ============================================
@@ -16,6 +18,7 @@ const elements = {
     // 目标引擎选择
     targetEngine: document.getElementById('targetEngine'),
     showBadge: document.getElementById('showBadge'),
+    languageSelect: document.getElementById('languageSelect'),
 
     // 添加/编辑引擎表单
     newEngineName: document.getElementById('newEngineName'),
@@ -27,7 +30,6 @@ const elements = {
     newEngineIsSource: document.getElementById('newEngineIsSource'),
     addEngine: document.getElementById('addEngine'),
     cancelEditEngine: document.getElementById('cancelEditEngine'),
-    // enginesList 已移除，使用 grid 容器
     enginesGrid: document.getElementById('engines-grid'),
     addEngineDetails: document.getElementById('addEngineDetails'),
 
@@ -43,6 +45,7 @@ const elements = {
 let state = {
     targetEngine: 'google',
     showBadge: false,
+    language: 'auto',
     engines: [...DEFAULT_ENGINES]
 };
 
@@ -58,6 +61,17 @@ let grid = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadSettings();
+
+    // 初始化语言
+    if (typeof initLanguage === 'function') {
+        await initLanguage(state.language);
+    }
+
+    // 初始化国际化
+    if (typeof initI18n === 'function') {
+        initI18n();
+    }
+
     initGrid();
     bindEvents();
     renderAll();
@@ -68,13 +82,16 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function loadSettings() {
     try {
-        const stored = await chrome.storage.sync.get(['targetEngine', 'showBadge', 'engines']);
+        const stored = await chrome.storage.sync.get(['targetEngine', 'showBadge', 'language', 'engines']);
 
         if (stored.targetEngine) {
             state.targetEngine = stored.targetEngine;
         }
         if (typeof stored.showBadge !== 'undefined') {
             state.showBadge = stored.showBadge;
+        }
+        if (stored.language) {
+            state.language = stored.language;
         }
         if (stored.engines && stored.engines.length > 0) {
             state.engines = stored.engines;
@@ -94,14 +111,15 @@ async function saveSettings() {
         await chrome.storage.sync.set({
             targetEngine: state.targetEngine,
             showBadge: state.showBadge,
+            language: state.language,
             engines: state.engines
         });
 
-        showStatus('✓ 设置已保存');
+        showStatus(i18n('statusSaved'));
         console.log('[Search Relay Options] 配置已保存:', state);
     } catch (error) {
         console.error('[Search Relay Options] 保存配置失败:', error);
-        showStatus('✗ 保存失败', true);
+        showStatus(i18n('statusSaveFailed'), true);
     }
 }
 
@@ -112,22 +130,22 @@ async function saveSettings() {
 function initGrid() {
     grid = new gridjs.Grid({
         columns: [
-            { id: 'name', name: '引擎名称', sort: true, width: '10%' },
+            { id: 'name', name: i18n('gridColumnName'), sort: true, width: '10%' },
             {
                 id: 'badge',
-                name: 'Badge',
+                name: i18n('gridColumnBadge'),
                 width: '100px',
                 formatter: (cell) => gridjs.html(`<span class="cell-badge">${escapeHtml(cell)}</span>`)
             },
             {
                 id: 'url',
-                name: 'URL 模板',
+                name: i18n('gridColumnUrl'),
                 formatter: (cell) => gridjs.html(`<span class="cell-url" title="${escapeHtml(cell)}">${escapeHtml(cell)}</span>`)
             },
-            { id: 'param', name: '参数', width: '100px' },
+            { id: 'param', name: i18n('gridColumnParam'), width: '100px' },
             {
                 id: 'isSource',
-                name: '源引擎',
+                name: i18n('gridColumnSource'),
                 sort: true,
                 width: '9%',
                 formatter: (cell, row) => {
@@ -142,7 +160,7 @@ function initGrid() {
             },
             {
                 id: 'isTarget',
-                name: '目标引擎',
+                name: i18n('gridColumnTarget'),
                 sort: true,
                 width: '10.5%',
                 formatter: (cell, row) => {
@@ -157,19 +175,21 @@ function initGrid() {
             },
             {
                 id: 'actions',
-                name: '操作',
+                name: i18n('gridColumnActions'),
                 sort: false,
                 width: '8%',
                 formatter: (cell, row) => {
                     const id = row.cells[7].data;
+                    const editTitle = i18n('editTooltip');
+                    const deleteTitle = i18n('deleteTooltip');
                     const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`;
-                    
+
                     return gridjs.html(`
                         <div style="display: flex; gap: 4px; justify-content: center;">
-                            <button class="btn-icon btn-edit" data-id="${id}" title="编辑">
+                            <button class="btn-icon btn-edit" data-id="${id}" title="${editTitle}">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
                             </button>
-                            <button class="btn-icon btn-delete" data-id="${id}" title="删除">
+                            <button class="btn-icon btn-delete" data-id="${id}" title="${deleteTitle}">
                                 ${deleteIcon}
                             </button>
                         </div>
@@ -189,15 +209,15 @@ function initGrid() {
             }
         },
         language: {
-            'search': { 'placeholder': '搜索...' },
+            'search': { 'placeholder': i18n('gridSearch') },
             'pagination': {
-                'previous': '上一页',
-                'next': '下一页',
-                'showing': '显示',
-                'results': () => '条记录'
+                'previous': i18n('gridPreviousPage'),
+                'next': i18n('gridNextPage'),
+                'showing': i18n('gridShowing'),
+                'results': () => i18n('gridResults')
             },
-            'loading': '加载中...',
-            'noRecordsFound': '暂无引擎'
+            'loading': i18n('gridLoading'),
+            'noRecordsFound': i18n('gridNoRecords')
         }
     }).render(elements.enginesGrid);
 }
@@ -238,6 +258,15 @@ function bindEvents() {
     elements.showBadge.addEventListener('change', async (e) => {
         state.showBadge = e.target.checked;
         await saveSettings();
+    });
+
+    // 语言选择
+    elements.languageSelect.addEventListener('change', async (e) => {
+        state.language = e.target.value;
+        await saveSettings();
+
+        // 刷新页面以应用新语言
+        location.reload();
     });
 
     // URL 输入变化时自动提取 domain 和 param
@@ -295,16 +324,16 @@ async function updateEngineState(id, updates) {
     const index = state.engines.findIndex(e => e.id === id);
     if (index !== -1) {
         state.engines[index] = { ...state.engines[index], ...updates };
-        
+
         // 如果取消了 isTarget 且当前是选中目标，需要处理
         if (updates.isTarget === false && state.targetEngine === id) {
             // 尝试切换到其他目标
-             const targetEngines = state.engines.filter(e => e.isTarget);
-             if (targetEngines.length > 0) {
-                 state.targetEngine = targetEngines[0].id;
-             } else {
-                 state.targetEngine = '';
-             }
+            const targetEngines = state.engines.filter(e => e.isTarget);
+            if (targetEngines.length > 0) {
+                state.targetEngine = targetEngines[0].id;
+            } else {
+                state.targetEngine = '';
+            }
         }
 
         await saveSettings();
@@ -374,6 +403,7 @@ function renderAll() {
  */
 function renderSettings() {
     elements.showBadge.checked = state.showBadge;
+    elements.languageSelect.value = state.language;
 }
 
 /**
@@ -387,7 +417,7 @@ function renderTargetEngineSelect() {
     if (targetEngines.length === 0) {
         const option = document.createElement('option');
         option.value = '';
-        option.textContent = '（无可用目标引擎）';
+        option.textContent = i18n('noTargetEngines');
         option.disabled = true;
         elements.targetEngine.appendChild(option);
         return;
@@ -426,25 +456,25 @@ async function handleEngineSubmit() {
 
     // 验证输入
     if (!name) {
-        showStatus('请输入引擎名称', true);
+        showStatus(i18n('errorEngineName'), true);
         elements.newEngineName.focus();
         return;
     }
 
     if (!url) {
-        showStatus('请输入搜索 URL', true);
+        showStatus(i18n('errorEngineUrl'), true);
         elements.newEngineUrl.focus();
         return;
     }
 
     if (!url.includes('%s')) {
-        showStatus('URL 必须包含 %s 作为关键词占位符', true);
+        showStatus(i18n('errorUrlPlaceholder'), true);
         elements.newEngineUrl.focus();
         return;
     }
 
     if (!isTarget && !isSource) {
-        showStatus('至少需要勾选一个角色（目标引擎或源引擎）', true);
+        showStatus(i18n('errorEngineRole'), true);
         return;
     }
 
@@ -507,7 +537,7 @@ function startEditEngine(id) {
     elements.newEngineIsSource.checked = engine.isSource;
 
     // 更新按钮状态
-    elements.addEngine.textContent = '保存修改';
+    elements.addEngine.textContent = i18n('saveChangesBtn');
     elements.cancelEditEngine.style.display = 'inline-flex';
 
     // 聚焦
@@ -531,7 +561,7 @@ function resetEditState() {
     elements.newEngineIsSource.checked = false;
 
     // 恢复按钮状态
-    elements.addEngine.textContent = '添加引擎';
+    elements.addEngine.textContent = i18n('addEngineBtn');
     elements.cancelEditEngine.style.display = 'none';
 }
 
@@ -545,7 +575,7 @@ async function deleteEngine(engineId) {
         resetEditState();
     }
 
-    if (!confirm('确定要删除此引擎吗？')) {
+    if (!confirm(i18n('confirmDelete'))) {
         return;
     }
 
@@ -570,7 +600,7 @@ async function deleteEngine(engineId) {
  * 恢复默认设置
  */
 async function resetToDefaults() {
-    if (!confirm('确定要恢复默认设置吗？这将清除所有自定义配置。')) {
+    if (!confirm(i18n('confirmReset'))) {
         return;
     }
 
@@ -583,7 +613,7 @@ async function resetToDefaults() {
     resetEditState();
     await saveSettings();
     renderAll();
-    showStatus('已恢复默认设置');
+    showStatus(i18n('statusRestored'));
 }
 
 // ============================================

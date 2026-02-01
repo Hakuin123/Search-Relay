@@ -10,6 +10,20 @@
 import { DEFAULT_ENGINES } from './config.js';
 
 // ============================================
+// i18n 辅助函数
+// ============================================
+
+/**
+ * 获取国际化消息
+ * @param {string} key - 消息键名
+ * @param {string|string[]} [substitutions] - 替换内容
+ * @returns {string} 国际化后的文本
+ */
+function i18n(key, substitutions) {
+  return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
+// ============================================
 // 初始化
 // ============================================
 
@@ -98,7 +112,7 @@ async function updateContextMenus() {
     // 创建父菜单
     chrome.contextMenus.create({
       id: "search_relay_root",
-      title: "使用 Search Relay 搜索",
+      title: i18n('contextMenuRoot'),
       contexts: ["action", "selection"]
     });
 
@@ -107,7 +121,7 @@ async function updateContextMenus() {
       chrome.contextMenus.create({
         id: `engine_${engine.id}`,
         parentId: "search_relay_root",
-        title: `使用 ${engine.name} 搜索`,
+        title: i18n('contextMenuUseEngine', engine.name),
         contexts: ["action", "selection"]
       });
     });
@@ -289,7 +303,7 @@ async function performSearch(keyword, specificEngineId = null) {
 async function showPromptDialog(tabId, specificEngineId) {
   const results = await chrome.scripting.executeScript({
     target: { tabId: tabId },
-    func: () => prompt('请输入要搜索的关键词：', '')
+    func: () => prompt(chrome.i18n.getMessage('promptKeyword'), '')
   });
 
   const userInput = results[0]?.result;

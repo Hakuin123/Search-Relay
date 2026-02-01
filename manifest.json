@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Search Relay",
+  "name": "__MSG_extName__",
   "version": "0.1.0",
-  "description": "快速在不同搜索引擎之间跳转搜索关键词。支持划词搜索和从搜索页面提取关键词",
+  "description": "__MSG_extDescription__",
+  "default_locale": "zh_CN",
   "author": "Hakuin123",
   "icons": {
     "16": "icons/icon16.png",
@@ -10,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Search Relay - 点击执行搜索跳转",
+    "default_title": "__MSG_extActionTitle__",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png"
