@@ -75,7 +75,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     initGrid();
     bindEvents();
     renderAll();
+    initVersion();
 });
+
+/**
+ * 初始化版本号显示
+ */
+function initVersion() {
+    const versionSpan = document.getElementById('extVersion');
+    if (versionSpan) {
+        const manifest = chrome.runtime.getManifest();
+        versionSpan.textContent = `v${manifest.version}`;
+    }
+}
 
 /**
  * 从 Chrome Storage 加载设置
