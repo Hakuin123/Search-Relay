@@ -1,4 +1,5 @@
-*.af
-icon1024.png
+icons/Search-Relay.af
+icons/icon1024.png
 web-ext-artifacts/
+docs/
 .gitignore

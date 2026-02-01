@@ -8,7 +8,7 @@
 
 import { DEFAULT_ENGINES } from './config.js';
 
-// i18n() 函数由 i18n-helper.js 提供
+// i18n() 函数由 i18n.js 提供
 
 // ============================================
 // DOM 元素引用
