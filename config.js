@@ -63,7 +63,7 @@ export const DEFAULT_ENGINES = [
     isSource: true
   },
   {
-    id: 'so',
+    id: '360so',
     name: '360搜索',
     url: 'https://www.so.com/s?q=%s',
     badge: '360',
@@ -89,6 +89,26 @@ export const DEFAULT_ENGINES = [
     badge: 'Y!',
     domain: 'search.yahoo.com',
     param: 'p',
+    isTarget: false,
+    isSource: true
+  },
+  {
+    id: 'bilibili',
+    name: 'Bilibili',
+    url: 'https://search.bilibili.com/all?keyword=%s',
+    badge: 'B站',
+    domain: 'search.bilibili.com',
+    param: 'keyword',
+    isTarget: false,
+    isSource: true
+  },
+  {
+    id: 'github',
+    name: 'GitHub',
+    url: 'https://github.com/search?q=%s',
+    badge: 'GH',
+    domain: 'github.com',
+    param: 'q',
     isTarget: false,
     isSource: true
   }
