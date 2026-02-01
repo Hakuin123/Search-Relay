@@ -1,0 +1,161 @@
+name: Release Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: "Bump Level"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    # 仅在 commit message 包含 "bump version" 或手动触发时运行
+    if: contains(github.event.head_commit.message, 'bump version') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 必须为 0 以便生成完整日志
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Version in manifest.json
+        id: version
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_LEVEL: ${{ inputs.level }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const manifest = require("./manifest.json");
+            const currentVersion = manifest.version;
+            let newVersion = currentVersion;
+            let shouldTag = false;
+
+            console.log(`Current version: ${currentVersion}`);
+            console.log(`Event: ${process.env.EVENT_NAME}`);
+
+            if (process.env.EVENT_NAME === "push") {
+              const msg = process.env.COMMIT_MSG || "";
+              // 尝试提取 "bump version to x.y.z"
+              const match = msg.match(/bump version to\s+v?([0-9]+\.[0-9]+\.[0-9]+)/i);
+              if (match) {
+                newVersion = match[1];
+                console.log(`Detected specific version in commit: ${newVersion}`);
+              } else {
+                // 如果没有指定具体版本，默认 bump patch
+                const parts = currentVersion.split(".").map(Number);
+                parts[2]++;
+                newVersion = parts.join(".");
+                console.log(`Auto-bumping patch to: ${newVersion}`);
+              }
+              // Push 触发时，如果检测到版本号变更，说明 Action 需要提交这个变更
+              // 但如果用户已经在 commit 里改了文件，这里读到的 currentVersion 就是新的
+              // 我们需要判断 manifest 文件在当前 commit 中是否被修改过？
+              // 简化逻辑：始终尝试更新 manifest，如果内容没变，git commit 会是空的
+            } else if (process.env.EVENT_NAME === "workflow_dispatch") {
+              const level = process.env.MANUAL_LEVEL || "patch";
+              const parts = currentVersion.split(".").map(Number);
+              if (level === "major") { parts[0]++; parts[1]=0; parts[2]=0; }
+              else if (level === "minor") { parts[1]++; parts[2]=0; }
+              else { parts[2]++; }
+              newVersion = parts.join(".");
+              console.log(`Manual bump (${level}) to: ${newVersion}`);
+            }
+
+            if (newVersion !== currentVersion) {
+              manifest.version = newVersion;
+              fs.writeFileSync("./manifest.json", JSON.stringify(manifest, null, 2) + "\n");
+              console.log("Updated manifest.json");
+            }
+            
+            // 输出给后续步骤
+            const fs2 = require("fs");
+            fs2.appendFileSync(process.env.GITHUB_OUTPUT, `version=${newVersion}\n`);
+          '
+
+      - name: Commit and Tag
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          echo "Target version: $VERSION"
+
+          # 检查 manifest.json 是否有变化
+          if git diff --quiet manifest.json; then
+            echo "manifest.json has no changes."
+          else
+            echo "Committing version bump..."
+            git add manifest.json
+            git commit -m "chore(release): bump version to $VERSION [skip ci]"
+            git push
+          fi
+
+          # 检查 Tag 是否存在
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists."
+          else
+            echo "Creating tag v$VERSION..."
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+          fi
+
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configuration: |
+            {
+              "categories": [
+                {
+                  "title": "## Features",
+                  "labels": ["feat", "feature"]
+                },
+                {
+                  "title": "## Fixes",
+                  "labels": ["fix", "bug"]
+                },
+                {
+                  "title": "## Chore",
+                  "labels": ["chore"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Build Extension
+        run: web-ext build --overwrite-dest
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Release v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: web-ext-artifacts/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
