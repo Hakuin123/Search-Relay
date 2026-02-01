@@ -35,7 +35,7 @@ const elements = {
 
     // 其他
     resetDefaults: document.getElementById('resetDefaults'),
-    statusMessage: document.getElementById('statusMessage')
+    snackbar: document.getElementById('snackbar')
 };
 
 // ============================================
@@ -621,19 +621,36 @@ async function resetToDefaults() {
 // ============================================
 
 /**
- * 显示状态消息
- * 
+ * 显示 SnackBar 消息
+ *
  * @param {string} message - 消息内容
  * @param {boolean} isError - 是否为错误消息
  */
-function showStatus(message, isError = false) {
-    elements.statusMessage.textContent = message;
-    elements.statusMessage.style.color = isError ? 'var(--danger-color)' : 'var(--success-color)';
-    elements.statusMessage.classList.add('show');
+let snackbarTimeout;
 
-    setTimeout(() => {
-        elements.statusMessage.classList.remove('show');
-    }, 2000);
+function showStatus(message, isError = false) {
+    const snackbar = elements.snackbar;
+    if (!snackbar) return;
+
+    snackbar.textContent = message;
+    
+    if (isError) {
+        snackbar.style.backgroundColor = 'var(--danger-color)';
+        snackbar.style.color = '#ffffff';
+    } else {
+        snackbar.style.backgroundColor = '';
+        snackbar.style.color = '';
+    }
+
+    snackbar.classList.add('show');
+
+    if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+    }
+
+    snackbarTimeout = setTimeout(() => {
+        snackbar.classList.remove('show');
+    }, 3000);
 }
 
 /**

@@ -36,7 +36,7 @@ export const DEFAULT_ENGINES = [
     id: 'bing_cn',
     name: 'Bing 中国',
     url: 'https://cn.bing.com/search?q=%s',
-    badge: 'Bing',
+    badge: '必应',
     domain: 'cn.bing.com',
     param: 'q',
     isTarget: false,

@@ -8,6 +8,9 @@
   "extActionTitle": {
     "message": "Search Relay - 点击执行搜索跳转"
   },
+  "generalSettings": {
+    "message": "通用设置"
+  },
   "settingsTitle": {
     "message": "Search Relay 设置"
   },

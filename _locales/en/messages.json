@@ -1,209 +1,212 @@
 {
-    "extName": {
-        "message": "Search Relay"
-    },
-    "extDescription": {
-        "message": "Quickly jump between different search engines with keywords. Supports text selection search and keyword extraction from search pages"
-    },
-    "extActionTitle": {
-        "message": "Search Relay - Click to execute search relay"
-    },
-    "settingsTitle": {
-        "message": "Search Relay Settings"
-    },
-    "settingsSubtitle": {
-        "message": "Configure search engine relay rules"
-    },
-    "currentTargetEngine": {
-        "message": "Current Target Engine"
-    },
-    "currentTargetEngineDesc": {
-        "message": "Select the search engine to redirect to when clicking the extension icon"
-    },
-    "targetEngineLabel": {
-        "message": "Target Engine"
-    },
-    "languageLabel": {
-        "message": "Language"
-    },
-    "languageChinese": {
-        "message": "简体中文"
-    },
-    "languageEnglish": {
-        "message": "English"
-    },
-    "languageAuto": {
-        "message": "Auto (Browser)"
-    },
-    "showBadgeLabel": {
-        "message": "Show Badge Text on Icon"
-    },
-    "showBadgeHint": {
-        "message": "When enabled, displays the abbreviation of the current search engine on the extension icon (e.g., G, B)"
-    },
-    "engineManagement": {
-        "message": "Search Engine Management"
-    },
-    "engineManagementDesc": {
-        "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to) or \"Source Engine\" (extract keywords from)."
-    },
-    "addEditEngine": {
-        "message": "Add/Edit Engine"
-    },
-    "engineName": {
-        "message": "Engine Name"
-    },
-    "engineNamePlaceholder": {
-        "message": "e.g., Bilibili"
-    },
-    "badgeText": {
-        "message": "Badge Text (max 4 characters recommended)"
-    },
-    "badgeTextPlaceholder": {
-        "message": "e.g., Bili"
-    },
-    "searchUrlTemplate": {
-        "message": "Search URL Template"
-    },
-    "searchUrlPlaceholder": {
-        "message": "e.g., https://search.bilibili.com/all?keyword=%s"
-    },
-    "searchUrlHint": {
-        "message": "Use %s as keyword placeholder, domain and parameter name will be auto-extracted"
-    },
-    "domainMatch": {
-        "message": "Domain Match (optional, auto-extracted)"
-    },
-    "domainPlaceholder": {
-        "message": "e.g., bilibili.com"
-    },
-    "domainHint": {
-        "message": "Used to extract keywords from this search engine's pages"
-    },
-    "urlParam": {
-        "message": "URL Parameter Name (optional, auto-extracted)"
-    },
-    "urlParamPlaceholder": {
-        "message": "e.g., keyword"
-    },
-    "urlParamHint": {
-        "message": "Used to extract search keywords from URL"
-    },
-    "isTargetEngine": {
-        "message": "As Target Engine"
-    },
-    "isTargetEngineHint": {
-        "message": "When checked, this engine will appear in dropdown menu and context menu for redirection"
-    },
-    "isSourceEngine": {
-        "message": "As Source Engine"
-    },
-    "isSourceEngineHint": {
-        "message": "When checked, keywords can be extracted from this engine's search result pages"
-    },
-    "addEngineBtn": {
-        "message": "Add Engine"
-    },
-    "saveChangesBtn": {
-        "message": "Save Changes"
-    },
-    "cancelEditBtn": {
-        "message": "Cancel Edit"
-    },
-    "resetDefaults": {
-        "message": "Reset to Defaults"
-    },
-    "gridColumnName": {
-        "message": "Engine Name"
-    },
-    "gridColumnBadge": {
-        "message": "Badge"
-    },
-    "gridColumnUrl": {
-        "message": "URL Template"
-    },
-    "gridColumnParam": {
-        "message": "Parameter"
-    },
-    "gridColumnSource": {
-        "message": "Source"
-    },
-    "gridColumnTarget": {
-        "message": "Target"
-    },
-    "gridColumnActions": {
-        "message": "Actions"
-    },
-    "gridSearch": {
-        "message": "Search..."
-    },
-    "gridPreviousPage": {
-        "message": "Previous"
-    },
-    "gridNextPage": {
-        "message": "Next"
-    },
-    "gridShowing": {
-        "message": "Showing"
-    },
-    "gridResults": {
-        "message": "results"
-    },
-    "gridLoading": {
-        "message": "Loading..."
-    },
-    "gridNoRecords": {
-        "message": "No engines"
-    },
-    "editTooltip": {
-        "message": "Edit"
-    },
-    "deleteTooltip": {
-        "message": "Delete"
-    },
-    "statusSaved": {
-        "message": "✓ Settings saved"
-    },
-    "statusSaveFailed": {
-        "message": "✗ Save failed"
-    },
-    "statusRestored": {
-        "message": "Default settings restored"
-    },
-    "errorEngineName": {
-        "message": "Please enter engine name"
-    },
-    "errorEngineUrl": {
-        "message": "Please enter search URL"
-    },
-    "errorUrlPlaceholder": {
-        "message": "URL must contain %s as keyword placeholder"
-    },
-    "errorEngineRole": {
-        "message": "At least one role (Target or Source) must be selected"
-    },
-    "confirmDelete": {
-        "message": "Are you sure you want to delete this engine?"
-    },
-    "confirmReset": {
-        "message": "Are you sure you want to reset to defaults? This will clear all custom configurations."
-    },
-    "noTargetEngines": {
-        "message": "(No available target engines)"
-    },
-    "contextMenuRoot": {
-        "message": "Search with Search Relay"
-    },
-    "contextMenuUseEngine": {
-        "message": "Search with $ENGINE$",
-        "placeholders": {
-            "ENGINE": {
-                "content": "$1",
-                "example": "Google"
-            }
-        }
-    },
-    "promptKeyword": {
-        "message": "Please enter keywords to search:"
+  "extName": {
+    "message": "Search Relay"
+  },
+  "extDescription": {
+    "message": "Quickly jump between different search engines with keywords. Supports text selection search and keyword extraction from search pages"
+  },
+  "extActionTitle": {
+    "message": "Search Relay - Click to execute search relay"
+  },
+  "generalSettings": {
+    "message": "General Settings"
+  },
+  "settingsTitle": {
+    "message": "Search Relay Settings"
+  },
+  "settingsSubtitle": {
+    "message": "Configure search engine relay rules"
+  },
+  "currentTargetEngine": {
+    "message": "Current Target Engine"
+  },
+  "currentTargetEngineDesc": {
+    "message": "Select the search engine to redirect to when clicking the extension icon"
+  },
+  "targetEngineLabel": {
+    "message": "Target Engine"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageAuto": {
+    "message": "Auto (Browser)"
+  },
+  "showBadgeLabel": {
+    "message": "Show Badge Text on Icon"
+  },
+  "showBadgeHint": {
+    "message": "When enabled, displays the abbreviation of the current search engine on the extension icon (e.g., G, B)"
+  },
+  "engineManagement": {
+    "message": "Search Engine Management"
+  },
+  "engineManagementDesc": {
+    "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to) or \"Source Engine\" (extract keywords from)."
+  },
+  "addEditEngine": {
+    "message": "Add/Edit Engine"
+  },
+  "engineName": {
+    "message": "Engine Name"
+  },
+  "engineNamePlaceholder": {
+    "message": "e.g., Bilibili"
+  },
+  "badgeText": {
+    "message": "Badge Text (max 4 characters recommended)"
+  },
+  "badgeTextPlaceholder": {
+    "message": "e.g., Bili"
+  },
+  "searchUrlTemplate": {
+    "message": "Search URL Template"
+  },
+  "searchUrlPlaceholder": {
+    "message": "e.g., https://search.bilibili.com/all?keyword=%s"
+  },
+  "searchUrlHint": {
+    "message": "Use %s as keyword placeholder, domain and parameter name will be auto-extracted"
+  },
+  "domainMatch": {
+    "message": "Domain Match (optional, auto-extracted)"
+  },
+  "domainPlaceholder": {
+    "message": "e.g., bilibili.com"
+  },
+  "domainHint": {
+    "message": "Used to extract keywords from this search engine's pages"
+  },
+  "urlParam": {
+    "message": "URL Parameter Name (optional, auto-extracted)"
+  },
+  "urlParamPlaceholder": {
+    "message": "e.g., keyword"
+  },
+  "urlParamHint": {
+    "message": "Used to extract search keywords from URL"
+  },
+  "isTargetEngine": {
+    "message": "As Target Engine"
+  },
+  "isTargetEngineHint": {
+    "message": "When checked, this engine will appear in dropdown menu and context menu for redirection"
+  },
+  "isSourceEngine": {
+    "message": "As Source Engine"
+  },
+  "isSourceEngineHint": {
+    "message": "When checked, keywords can be extracted from this engine's search result pages"
+  },
+  "addEngineBtn": {
+    "message": "Add Engine"
+  },
+  "saveChangesBtn": {
+    "message": "Save Changes"
+  },
+  "cancelEditBtn": {
+    "message": "Cancel Edit"
+  },
+  "resetDefaults": {
+    "message": "Reset to Defaults"
+  },
+  "gridColumnName": {
+    "message": "Engine Name"
+  },
+  "gridColumnBadge": {
+    "message": "Badge"
+  },
+  "gridColumnUrl": {
+    "message": "URL Template"
+  },
+  "gridColumnParam": {
+    "message": "Parameter"
+  },
+  "gridColumnSource": {
+    "message": "Source"
+  },
+  "gridColumnTarget": {
+    "message": "Target"
+  },
+  "gridColumnActions": {
+    "message": "Actions"
+  },
+  "gridSearch": {
+    "message": "Search..."
+  },
+  "gridPreviousPage": {
+    "message": "Previous"
+  },
+  "gridNextPage": {
+    "message": "Next"
+  },
+  "gridShowing": {
+    "message": "Showing"
+  },
+  "gridResults": {
+    "message": "results"
+  },
+  "gridLoading": {
+    "message": "Loading..."
+  },
+  "gridNoRecords": {
+    "message": "No engines"
+  },
+  "editTooltip": {
+    "message": "Edit"
+  },
+  "deleteTooltip": {
+    "message": "Delete"
+  },
+  "statusSaved": {
+    "message": "✓ Settings saved"
+  },
+  "statusSaveFailed": {
+    "message": "✗ Save failed"
+  },
+  "statusRestored": {
+    "message": "Default settings restored"
+  },
+  "errorEngineName": {
+    "message": "Please enter engine name"
+  },
+  "errorEngineUrl": {
+    "message": "Please enter search URL"
+  },
+  "errorUrlPlaceholder": {
+    "message": "URL must contain %s as keyword placeholder"
+  },
+  "errorEngineRole": {
+    "message": "At least one role (Target or Source) must be selected"
+  },
+  "confirmDelete": {
+    "message": "Are you sure you want to delete this engine?"
+  },
+  "confirmReset": {
+    "message": "Are you sure you want to reset to defaults? This will clear all custom configurations."
+  },
+  "noTargetEngines": {
+    "message": "(No available target engines)"
+  },
+  "contextMenuRoot": {
+    "message": "Search with Search Relay"
+  },
+  "contextMenuUseEngine": {
+    "message": "Search with $ENGINE$",
+    "placeholders": {
+      "ENGINE": {
+        "content": "$1",
+        "example": "Google"
+      }
     }
+  },
+  "promptKeyword": {
+    "message": "Please enter keywords to search:"
+  }
 }
