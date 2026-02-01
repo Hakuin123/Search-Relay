@@ -35,7 +35,7 @@ const elements = {
 
     // 其他
     resetDefaults: document.getElementById('resetDefaults'),
-    snackbar: document.getElementById('snackbar')
+    snackbarContainer: document.getElementById('snackbar-container')
 };
 
 // ============================================
@@ -614,6 +614,11 @@ async function resetToDefaults() {
     await saveSettings();
     renderAll();
     showStatus(i18n('statusRestored'));
+
+    // 延迟刷新页面以应用更改
+    setTimeout(() => {
+        location.reload();
+    }, 1500);
 }
 
 // ============================================
@@ -626,30 +631,43 @@ async function resetToDefaults() {
  * @param {string} message - 消息内容
  * @param {boolean} isError - 是否为错误消息
  */
-let snackbarTimeout;
+const ICONS = {
+    SUCCESS: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>`,
+    ERROR: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`
+};
 
 function showStatus(message, isError = false) {
-    const snackbar = elements.snackbar;
-    if (!snackbar) return;
+    const container = elements.snackbarContainer;
+    if (!container) return;
 
-    snackbar.textContent = message;
+    const snackbar = document.createElement('div');
+    snackbar.className = 'snackbar';
     
+    const icon = isError ? ICONS.ERROR : ICONS.SUCCESS;
+    snackbar.innerHTML = `${icon}<span>${escapeHtml(message)}</span>`;
+
     if (isError) {
         snackbar.style.backgroundColor = 'var(--danger-color)';
         snackbar.style.color = '#ffffff';
-    } else {
-        snackbar.style.backgroundColor = '';
-        snackbar.style.color = '';
     }
 
-    snackbar.classList.add('show');
+    container.appendChild(snackbar);
 
-    if (snackbarTimeout) {
-        clearTimeout(snackbarTimeout);
-    }
+    // 触发重绘以确保动画执行
+    requestAnimationFrame(() => {
+        snackbar.classList.add('show');
+    });
 
-    snackbarTimeout = setTimeout(() => {
+    // 3秒后自动移除
+    setTimeout(() => {
         snackbar.classList.remove('show');
+
+        // 等待过渡动画结束后从 DOM 移除
+        snackbar.addEventListener('transitionend', () => {
+            if (snackbar.parentNode) {
+                snackbar.remove();
+            }
+        });
     }, 3000);
 }
 

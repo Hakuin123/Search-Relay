@@ -165,10 +165,10 @@
     "message": "Delete"
   },
   "statusSaved": {
-    "message": "✓ Settings saved"
+    "message": "Settings saved"
   },
   "statusSaveFailed": {
-    "message": "✗ Save failed"
+    "message": "Save failed"
   },
   "statusRestored": {
     "message": "Default settings restored"

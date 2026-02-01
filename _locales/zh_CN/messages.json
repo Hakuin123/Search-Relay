@@ -165,10 +165,10 @@
     "message": "删除"
   },
   "statusSaved": {
-    "message": "✓ 设置已保存"
+    "message": "设置已保存"
   },
   "statusSaveFailed": {
-    "message": "✗ 保存失败"
+    "message": "保存失败"
   },
   "statusRestored": {
     "message": "已恢复默认设置"

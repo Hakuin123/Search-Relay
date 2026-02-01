@@ -539,33 +539,54 @@ th[data-column-id="actions"] .gridjs-resizable {
 }
 
 /* SnackBar Notification */
-#snackbar {
-  visibility: hidden;
-  min-width: 280px;
+#snackbar-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  width: max-content;
+  max-width: 80vw;
+}
+
+.snackbar {
   background-color: #333;
   color: #fff;
   text-align: center;
   border-radius: 50px;
   padding: 12px 24px;
-  position: fixed;
-  z-index: 1000;
-  left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
   font-size: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
   opacity: 0;
-  transition: opacity 0.3s ease, bottom 0.3s ease;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-#snackbar.show {
-  visibility: visible;
+.snackbar svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.snackbar.show {
   opacity: 1;
-  bottom: 50px;
+  transform: translateY(0);
 }
 
 @media (prefers-color-scheme: dark) {
-  #snackbar {
+  .snackbar {
     background-color: #f5f7fa;
     color: #1a1a2e;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
