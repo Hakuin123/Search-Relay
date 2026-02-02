@@ -87,10 +87,10 @@
     "message": "URL 参数名（可选，自动提取）"
   },
   "urlParamPlaceholder": {
-    "message": "例如: keyword"
+    "message": "例如: keyword 或 k,wd"
   },
   "urlParamHint": {
-    "message": "用于从 URL 中提取搜索关键词"
+    "message": "用于从 URL 中提取搜索关键词（支持多个，用英文逗号分隔）"
   },
   "isTargetEngine": {
     "message": "作为目标引擎"

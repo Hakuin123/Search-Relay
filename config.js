@@ -18,7 +18,7 @@ export const DEFAULT_ENGINES = [
     url: 'https://www.baidu.com/s?wd=%s',
     badge: '百度',
     domain: 'baidu.com',
-    param: 'wd',
+    param: 'wd,word',
     isTarget: true,
     isSource: true
   },

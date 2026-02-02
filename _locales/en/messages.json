@@ -87,10 +87,10 @@
     "message": "URL Parameter Name (optional, auto-extracted)"
   },
   "urlParamPlaceholder": {
-    "message": "e.g., keyword"
+    "message": "e.g., keyword or k,wd"
   },
   "urlParamHint": {
-    "message": "Used to extract search keywords from URL"
+    "message": "Used to extract search keywords from URL (supports multiple, comma-separated)"
   },
   "isTargetEngine": {
     "message": "As Target Engine"

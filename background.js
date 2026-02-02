@@ -253,9 +253,15 @@ async function extractKeywordFromUrl(urlString) {
 
     for (const engine of sourceEngines) {
       if (hostname === engine.domain || hostname.endsWith('.' + engine.domain)) {
-        const keyword = url.searchParams.get(engine.param);
-        if (keyword) {
-          return keyword;
+        // 支持多个参数名，用逗号分隔
+        const params = engine.param.split(',').map(p => p.trim());
+        
+        for (const param of params) {
+          if (!param) continue;
+          const keyword = url.searchParams.get(param);
+          if (keyword) {
+            return keyword;
+          }
         }
       }
     }
