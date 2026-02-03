@@ -122,9 +122,10 @@ jobs:
 
       - name: Build Changelog
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v4
+        uses: mikepenz/release-changelog-builder-action@v6
         with:
-          configuration: |
+          mode: "HYBRID"
+          configurationJson: |
             {
               "categories": [
                 {
@@ -138,6 +139,13 @@ jobs:
                 {
                   "title": "## Chore",
                   "labels": ["chore"]
+                }
+              ],
+              "label_extractor": [
+                {
+                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
+                  "on_property": "title",
+                  "target": "$1"
                 }
               ]
             }
