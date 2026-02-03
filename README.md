@@ -1,6 +1,11 @@
-# Search Relay
+<h1 align="center">
+  <img src="icons/icon128.png" alt="Logo" height="42" style="vertical-align: middle;"> Search Relay
+</h1>
 
-一个简单的浏览器扩展，快速在不同搜索引擎之间跳转/比对搜索结果。支持划词搜索、右键菜单搜索，以及从当前搜索结果页一键提取关键词跳转到其他引擎
+<div align="center">
+  一个简单的浏览器扩展，快速在不同搜索引擎之间跳转/比对搜索结果<br>
+  支持一键提取关键词切换搜索引擎、划词搜索、右键菜单搜索
+</div>
 
 ## 功能
 
@@ -8,24 +13,24 @@
 
 在某个搜索引擎中，若对搜索结果不满意，点击扩展图标，使用选定的搜索引擎一键重新搜索
 
-Search Relay 会**自动提取搜索关键词**
+Search Relay 会**自动提取当前搜索结果页的搜索关键词**
 
-![alt text](docs/images/PixPin_20260201_173622.gif)
+![示例](docs/images/一键切换搜索引擎.gif)
 
-> 也可以右键扩展图标，选择希望使用的搜索引擎
-> ![alt text](docs/images/PixPin_20260201_174024.gif)
+> 也可以右键扩展图标，选择希望使用的搜索引擎<br>
+> <img src="docs/images/右键菜单.gif" width="450" alt="示例">
 
 ### 划词搜索
 
 选中页面上的文字，通过右键菜单选项快速选择搜索引擎进行搜索
-![示例](docs/images/PixPin_20260201_172930.gif)
+![示例](docs/images/划词搜索.gif)
 
 ## 更多用法
 
 ### 自定义搜索引擎
 
 在设置页中可以按照说明自行添加搜索引擎，比如可以添加哔哩哔哩为搜索引擎，快捷搜索b站视频
-![alt text](docs/images/自定义搜索引擎.png)
+![示例](docs/images/自定义搜索引擎.png)
 
 > [!TIP]
 > 关于 **源引擎** 和 **目标引擎**
