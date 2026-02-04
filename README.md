@@ -6,6 +6,14 @@
   一个简单的浏览器扩展，快速在不同搜索引擎之间跳转/比对搜索结果<br>
   支持一键提取关键词切换搜索引擎、划词搜索、右键菜单搜索
 </div>
+<br>
+<p align="center">
+   <img src="docs/images/badges/Chinese_(Simplified)_Get_it_from_Microsoft_Edge.png" alt="Edge Add-ons" height="45">
+  &nbsp;
+  <a href="https://addons.mozilla.org/firefox/addon/search-relay/">
+    <img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Firefox Add-ons" height="45">
+  </a>
+</p>
 
 ## 功能
 
@@ -60,8 +68,10 @@ Search Relay 会**自动提取当前搜索结果页的搜索关键词**
 
 ### 商店下载
 
-- Edge Add-ons: [待发布]
 - Chrome Web Store: [计划中]
+- Edge Add-ons: [点此获取](https://microsoftedge.microsoft.com/addons/detail/pnemkcglehklmoljjkkkejhplaignejo)
+- Firefox Add-ons: [点此获取](https://addons.mozilla.org/firefox/addon/search-relay/)
+
 
 ### 手动安装 (开发者模式)
 

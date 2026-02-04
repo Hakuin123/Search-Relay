@@ -168,6 +168,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build Firefox Version
+        run: node scripts/build-firefox.js
+
+      - name: Build Firefox Artifact
+        run: web-ext build --source-dir build/firefox --artifacts-dir web-ext-artifacts/firefox --overwrite-dest
+
+      - name: Publish to Firefox Add-ons
+        uses: wdzeng/firefox-addon@v1
+        with:
+          addon-guid: "search-relay@hakuin123"
+          jwt-issuer: ${{ secrets.FIREFOX_API_KEY }}
+          jwt-secret: ${{ secrets.FIREFOX_API_SECRET }}
+          xpi-path: web-ext-artifacts/firefox/*.zip
+
       - name: Publish to Edge Add-ons
         uses: wdzeng/edge-addon@v2
         with:
