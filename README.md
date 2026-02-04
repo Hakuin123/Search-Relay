@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="icons/icon128.png" alt="Logo" height="42" style="vertical-align: middle;"> Search Relay
+  <img src="src/icons/icon128.png" alt="Logo" height="42" style="vertical-align: middle;"> Search Relay
 </h1>
 
 <div align="center">

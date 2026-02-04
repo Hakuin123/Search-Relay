@@ -1,6 +1,5 @@
 name: Release Extension
 
-
 on:
   workflow_dispatch:
     inputs:
@@ -50,7 +49,7 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
-            const manifest = require("./manifest.json");
+            const manifest = require("./src/manifest.json");
             const currentVersion = manifest.version;
             let newVersion = currentVersion;
             let shouldTag = false;
@@ -88,7 +87,7 @@ jobs:
 
             if (newVersion !== currentVersion) {
               manifest.version = newVersion;
-              fs.writeFileSync("./manifest.json", JSON.stringify(manifest, null, 2) + "\n");
+              fs.writeFileSync("./src/manifest.json", JSON.stringify(manifest, null, 2) + "\n");
               console.log("Updated manifest.json");
             }
             
@@ -103,11 +102,11 @@ jobs:
           echo "Target version: $VERSION"
 
           # 检查 manifest.json 是否有变化
-          if git diff --quiet manifest.json; then
+          if git diff --quiet src/manifest.json; then
             echo "manifest.json has no changes."
           else
             echo "Committing version bump..."
-            git add manifest.json
+            git add src/manifest.json
             git commit -m "chore(release): bump version to $VERSION [skip ci]"
             git push
           fi
