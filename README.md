@@ -8,7 +8,9 @@
 </div>
 <br>
 <p align="center">
-   <img src="docs/images/badges/Chinese_(Simplified)_Get_it_from_Microsoft_Edge.png" alt="Edge Add-ons" height="45">
+   <a href="https://microsoftedge.microsoft.com/addons/detail/pnemkcglehklmoljjkkkejhplaignejo">
+      <img src="docs/images/badges/Chinese_(Simplified)_Get_it_from_Microsoft_Edge.png" alt="Edge Add-ons" height="45">
+   </a>
   &nbsp;
   <a href="https://addons.mozilla.org/firefox/addon/search-relay/">
     <img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Firefox Add-ons" height="45">
