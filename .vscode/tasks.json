@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Chrome",
+            "type": "shell",
+            "command": "web-ext build --source-dir src --artifacts-dir web-ext-artifacts/chrome --overwrite-dest",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Build Firefox",
+            "type": "shell",
+            "command": "node scripts/build-firefox.js && web-ext build --source-dir build/firefox --artifacts-dir web-ext-artifacts/firefox --overwrite-dest",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/d",
+                        "/c"
+                    ]
+                }
+            }
+        },
+        {
+            "label": "Build All",
+            "dependsOn": [
+                "Build Chrome",
+                "Build Firefox"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
