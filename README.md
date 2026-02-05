@@ -145,3 +145,13 @@ GNU General Public License v3.0
 - 本项目使用了 [Icons8](https://icons8.com/icon/WwWusvLMTFd7/search) 提供的图标资源。
 - `assets/design/Search-Relay.af` 及其设计稿版权归本项目作者 [@白隐Hakuin](https://github.com/Hakuin123) 所有。
 - 本仓库中使用的商店徽章（Badges）及其设计稿的版权归其各自所有者所有。
+
+另请参阅各大扩展商店的推广指南：
+- [Chrome Web Store](https://developer.chrome.com/docs/webstore/branding/)
+- [Microsoft Edge Add-ons](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/badges)
+- [FireFox Add-ons](https://extensionworkshop.com/documentation/publish/promoting-your-extension/)
+
+---
+
+开发者中心:
+[Chrome](https://chrome.google.com/webstore/devconsole) | [Edge](https://partner.microsoft.com/zh-cn/dashboard/microsoftedge/overview) | [FireFox](https://addons.mozilla.org/zh-CN/developers/addons)
