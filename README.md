@@ -7,14 +7,13 @@
   支持一键提取关键词切换搜索引擎、划词搜索、右键菜单搜索
 </div>
 <br>
+
 <p align="center">
-   <a href="https://microsoftedge.microsoft.com/addons/detail/pnemkcglehklmoljjkkkejhplaignejo">
-      <img src="docs/images/badges/Chinese_(Simplified)_Get_it_from_Microsoft_Edge.png" alt="Edge Add-ons" height="45">
-   </a>
+  <a href="https://chromewebstore.google.com/detail/pdfcebejkdmomigfhbfejipoljdkbnhf/"><img src="docs\images\badges\Available_in_the_Chrome_Web_Store.png" alt="Chrome Web Store" height="45"></a>
   &nbsp;
-  <a href="https://addons.mozilla.org/firefox/addon/search-relay/">
-    <img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Firefox Add-ons" height="45">
-  </a>
+  <a href="https://microsoftedge.microsoft.com/addons/detail/pnemkcglehklmoljjkkkejhplaignejo"><img src="docs/images/badges/Chinese_(Simplified)_Get_it_from_Microsoft_Edge.png" alt="Edge Add-ons" height="45"></a>
+  &nbsp;
+  <a href="https://addons.mozilla.org/firefox/addon/search-relay/"><img src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" alt="Firefox Add-ons" height="45"></a>
 </p>
 
 ## 功能 Features
@@ -70,7 +69,7 @@ Search Relay 会**自动提取当前搜索结果页的搜索关键词**
 
 ### 商店下载
 
-- Chrome Web Store: [计划中]
+- Chrome Web Store: [点此获取](https://chromewebstore.google.com/detail/pdfcebejkdmomigfhbfejipoljdkbnhf/)
 - Edge Add-ons: [点此获取](https://microsoftedge.microsoft.com/addons/detail/pnemkcglehklmoljjkkkejhplaignejo)
 - Firefox Add-ons: [点此获取](https://addons.mozilla.org/firefox/addon/search-relay/)
 
@@ -143,4 +142,6 @@ GNU General Public License v3.0
 
 > 我们希望通过GPLv3许可证，确保 Search Relay 及其衍生作品始终保持开源，以更好地保护用户隐私。
 
-Search Relay 的图标采用了 [icon8](https://icons8.com/icon/WwWusvLMTFd7/search) 的素材
+- 本项目使用了 [Icons8](https://icons8.com/icon/WwWusvLMTFd7/search) 提供的图标资源。
+- `assets/design/Search-Relay.af` 及其设计稿版权归本项目作者 [@白隐Hakuin](https://github.com/Hakuin123) 所有。
+- 本仓库中使用的商店徽章（Badges）及其设计稿的版权归其各自所有者所有。
