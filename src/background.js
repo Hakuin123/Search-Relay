@@ -114,6 +114,11 @@ async function updateContextMenus() {
       id: "search_relay_root",
       title: i18n('contextMenuRoot'),
       contexts: ["action", "selection"]
+    }, () => {
+      if (chrome.runtime.lastError) {
+        // 忽略重复ID错误，这种情况通常发生在快速重载或多次调用时
+        console.debug('[Search Relay] 创建根菜单提示:', chrome.runtime.lastError.message);
+      }
     });
 
     // 为每个目标引擎创建子菜单
@@ -123,6 +128,10 @@ async function updateContextMenus() {
         parentId: "search_relay_root",
         title: i18n('contextMenuUseEngine', engine.name),
         contexts: ["action", "selection"]
+      }, () => {
+        if (chrome.runtime.lastError) {
+          console.debug(`[Search Relay] 创建子菜单提示 (${engine.id}):`, chrome.runtime.lastError.message);
+        }
       });
     });
 
