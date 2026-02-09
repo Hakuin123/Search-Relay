@@ -252,7 +252,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 async function extractKeywordFromUrl(urlString) {
   try {
     const url = new URL(urlString);
-    const hostname = url.hostname;
+    const { hostname } = url;
 
     const { engines } = await chrome.storage.sync.get(['engines']);
     const allEngines = engines || DEFAULT_ENGINES;
