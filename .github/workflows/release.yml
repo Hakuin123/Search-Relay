@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       level:
-        description: "Bump Level"
+        description: 'Bump Level'
         required: true
-        default: "patch"
+        default: 'patch'
         type: choice
         options:
           - patch
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Configure Git
         run: |
@@ -124,7 +124,7 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v6
         with:
-          mode: "HYBRID"
+          mode: 'HYBRID'
           configurationJson: |
             {
               "categories": [
@@ -177,7 +177,7 @@ jobs:
       - name: Publish to Firefox Add-ons
         uses: wdzeng/firefox-addon@v1
         with:
-          addon-guid: "search-relay@hakuin123"
+          addon-guid: 'search-relay@hakuin123'
           jwt-issuer: ${{ secrets.FIREFOX_API_KEY }}
           jwt-secret: ${{ secrets.FIREFOX_API_SECRET }}
           xpi-path: web-ext-artifacts/firefox/*.zip

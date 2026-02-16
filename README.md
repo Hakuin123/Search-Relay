@@ -147,6 +147,7 @@ GNU General Public License v3.0
 - 本仓库中使用的商店徽章（Badges）及其设计稿的版权归其各自所有者所有。
 
 另请参阅各大扩展商店的推广指南：
+
 - [Chrome Web Store](https://developer.chrome.com/docs/webstore/branding/)
 - [Microsoft Edge Add-ons](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/badges)
 - [FireFox Add-ons](https://extensionworkshop.com/documentation/publish/promoting-your-extension/)

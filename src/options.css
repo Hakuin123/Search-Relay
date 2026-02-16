@@ -82,7 +82,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   font-size: 14px;
   line-height: 1.6;
@@ -165,7 +166,7 @@ body {
 }
 
 /* 折叠面板样式 */
-details>summary {
+details > summary {
   list-style: none;
   /* Chrome, Edge, Safari */
   cursor: pointer;
@@ -176,22 +177,22 @@ details>summary {
   outline: none;
 }
 
-details>summary::-webkit-details-marker {
+details > summary::-webkit-details-marker {
   display: none;
   /* Chrome (older) */
 }
 
 /* 覆盖 h2 margins 以适配 summary */
-details>summary h2 {
+details > summary h2 {
   margin-bottom: 4px;
 }
 
-details>summary .description {
+details > summary .description {
   margin-bottom: 0;
   transition: opacity 0.2s;
 }
 
-details[open]>summary .description {
+details[open] > summary .description {
   margin-bottom: 20px;
   /* 展开时恢复间距 */
 }
@@ -276,7 +277,9 @@ details[open] .toggle-icon {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .input:focus,
@@ -445,19 +448,19 @@ details[open] .toggle-icon {
 }
 
 /* 特定列居中对齐 */
-th[data-column-id="isSource"],
-td[data-column-id="isSource"],
-th[data-column-id="isTarget"],
-td[data-column-id="isTarget"],
-th[data-column-id="actions"],
-td[data-column-id="actions"] {
+th[data-column-id='isSource'],
+td[data-column-id='isSource'],
+th[data-column-id='isTarget'],
+td[data-column-id='isTarget'],
+th[data-column-id='actions'],
+td[data-column-id='actions'] {
   text-align: center !important;
 }
 
 /* 禁用特定列的调整大小手柄 */
-th[data-column-id="isSource"] .gridjs-resizable,
-th[data-column-id="isTarget"] .gridjs-resizable,
-th[data-column-id="actions"] .gridjs-resizable {
+th[data-column-id='isSource'] .gridjs-resizable,
+th[data-column-id='isTarget'] .gridjs-resizable,
+th[data-column-id='actions'] .gridjs-resizable {
   display: none !important;
 }
 
@@ -568,7 +571,7 @@ th[data-column-id="actions"] .gridjs-resizable {
   font-size: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -576,7 +579,9 @@ th[data-column-id="actions"] .gridjs-resizable {
 
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .snackbar svg {

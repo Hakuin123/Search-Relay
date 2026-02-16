@@ -1,9 +1,8 @@
 export default {
   sourceDir: 'src',
   verbose: true,
-  ignoreFiles: [
-  ],
+  ignoreFiles: [],
   build: {
-    overwriteDest: true
-  }
-};
+    overwriteDest: true,
+  },
+}

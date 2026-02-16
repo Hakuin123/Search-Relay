@@ -10,7 +10,7 @@ export const DEFAULT_ENGINES = [
     domain: 'google.com',
     param: 'q',
     isTarget: true,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'baidu',
@@ -20,7 +20,7 @@ export const DEFAULT_ENGINES = [
     domain: 'baidu.com',
     param: 'wd,word',
     isTarget: true,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'bing',
@@ -30,7 +30,7 @@ export const DEFAULT_ENGINES = [
     domain: 'bing.com',
     param: 'q',
     isTarget: true,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'bing_cn',
@@ -40,7 +40,7 @@ export const DEFAULT_ENGINES = [
     domain: 'cn.bing.com',
     param: 'q',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'duckduckgo',
@@ -50,7 +50,7 @@ export const DEFAULT_ENGINES = [
     domain: 'duckduckgo.com',
     param: 'q',
     isTarget: true,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'sogou',
@@ -60,7 +60,7 @@ export const DEFAULT_ENGINES = [
     domain: 'sogou.com',
     param: 'query',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: '360so',
@@ -70,7 +70,7 @@ export const DEFAULT_ENGINES = [
     domain: 'so.com',
     param: 'q',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'yandex',
@@ -80,7 +80,7 @@ export const DEFAULT_ENGINES = [
     domain: 'yandex.com',
     param: 'text',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'yahoo',
@@ -90,7 +90,7 @@ export const DEFAULT_ENGINES = [
     domain: 'search.yahoo.com',
     param: 'p',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'bilibili',
@@ -100,7 +100,7 @@ export const DEFAULT_ENGINES = [
     domain: 'search.bilibili.com',
     param: 'keyword',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'github',
@@ -110,7 +110,7 @@ export const DEFAULT_ENGINES = [
     domain: 'github.com',
     param: 'q',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'google_translate',
@@ -120,7 +120,7 @@ export const DEFAULT_ENGINES = [
     domain: 'translate.google.com',
     param: 'text',
     isTarget: false,
-    isSource: true
+    isSource: true,
   },
   {
     id: 'baidu_translate',
@@ -130,6 +130,6 @@ export const DEFAULT_ENGINES = [
     domain: 'fanyi.baidu.com',
     param: 'text',
     isTarget: false,
-    isSource: true
-  }
-];
+    isSource: true,
+  },
+]
