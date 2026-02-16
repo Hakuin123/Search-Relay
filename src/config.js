@@ -131,5 +131,5 @@ export const DEFAULT_ENGINES = [
     param: 'text',
     isTarget: false,
     isSource: true
-  },
+  }
 ];

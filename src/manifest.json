@@ -22,11 +22,13 @@
     "type": "module"
   },
   "options_page": "options.html",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "scripting",
-    "contextMenus"
-  ],
+  "permissions": ["activeTab", "storage", "scripting", "contextMenus"],
+  "externally_connectable": {
+    "matches": [
+      "https://search-relay.hk256.top/*",
+      "http://127.0.0.1:3000/*",
+      "http://localhost:3000/*"
+    ]
+  },
   "offline_enabled": true
 }
