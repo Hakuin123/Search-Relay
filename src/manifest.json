@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "__MSG_extDescription__",
   "default_locale": "zh_CN",
   "author": "Hakuin123",
@@ -22,7 +22,12 @@
     "type": "module"
   },
   "options_page": "options.html",
-  "permissions": ["activeTab", "storage", "scripting", "contextMenus"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "contextMenus"
+  ],
   "externally_connectable": {
     "matches": [
       "https://search-relay.hk256.top/*",
