@@ -80,57 +80,9 @@ Search Relay 会**自动提取当前搜索结果页的搜索关键词**
 3.  打开右上角的“开发者模式”
 4.  点击“加载已解压的扩展程序”，选择解压目录
 
-## 构建 Build
+## 构建&测试 Build & Test
 
-确保已安装 [Node.js](https://nodejs.org/) (v14+) 和 [npm](https://www.npmjs.com/)。
-
-此外还需要全局安装 `web-ext` 工具用来打包扩展：
-
-```bash
-npm install --global web-ext
-```
-
-### 克隆仓库
-
-```bash
-git clone https://github.com/Hakuin123/Search-Relay.git
-cd Search-Relay
-```
-
-### VS Code Task 自动化构建 (推荐)
-
-1. 在 VS Code 中按下 `Ctrl+Shift+B` 将自动执行 **Build All** 任务，构建所有版本。
-2. 若需单独构建某个版本，请点击菜单 `Terminal` -> `Run Task...`，然后从列表中选择。
-3. 构建完成后，您可以在项目根目录下的 `web-ext-artifacts` 文件夹中找到生成的 `.zip` 文件。
-
-Chrome 版本储存在 `web-ext-artifacts/chrome/` 目录下，Firefox 版本储存在 `web-ext-artifacts/firefox/` 目录下。
-
-### 命令行构建
-
-如果您不使用 VS Code，也可以在终端中运行以下命令来手动构建。
-
-**Chrome / Edge:**
-
-```bash
-web-ext build --source-dir src --artifacts-dir web-ext-artifacts/chrome --overwrite-dest
-```
-
-生成的 `.zip` 文件将位于 `web-ext-artifacts/chrome/` 目录下。
-
-**Firefox:**
-
-Firefox 构建需要先运行适配脚本再打包：
-
-```cmd
-node scripts/build-firefox.js
-web-ext build --source-dir build/firefox --artifacts-dir web-ext-artifacts/firefox --overwrite-dest
-```
-
-生成的 `.zip` 文件将位于 `web-ext-artifacts/firefox/` 目录下。
-
-注意:正式版 Firefox 禁止安装未签名的附加组件。[更多信息](https://support.mozilla.org/kb/add-ons-signing-firefox)
-
-如果希望在正式版中测试未签名的开发版本，可以在about:debugging页面选择“此 Firefox”，点击“临时加载附加组件…”，然后选择 `build/firefox/manifest.json` 文件（可选择 manifest.json 文件或 .xpi/.zip 压缩包）。
+参见：[构建&测试文档](docs/build&test.md)
 
 ## 隐私声明 Policy
 
