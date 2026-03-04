@@ -246,23 +246,27 @@ async function handleSearchAction(tab, specificEngineId = null) {
   )
 
   try {
-    // 权限检查：chrome:// 等页面无法注入脚本
-    if (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
-      // 如果有特定引擎（右键菜单），直接无法执行选中获取，只能尝试弹窗（但弹窗也注入不了）
-      // 在这种特殊页面，只能通知用户无法操作，或者只弹窗（如果支持的话）
-      // 这里简单处理：如果无法注入，尝试获取 Tab URL 参数（如果是已知引擎），否则无解
-    }
+    // 权限检查：chrome:// 等特殊页面无法注入脚本
+    const canInject = !(
+      tab.url.startsWith('chrome://') ||
+      tab.url.startsWith('edge://') ||
+      tab.url.startsWith('about:') ||
+      tab.url.startsWith('chrome-extension://') ||
+      tab.url.startsWith('moz-extension://')
+    )
 
     // ========== 优先级 1: 划词搜索 ==========
     let selectedText = ''
-    try {
-      const selectionResults = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => window.getSelection().toString().trim(),
-      })
-      selectedText = selectionResults[0]?.result
-    } catch (e) {
-      console.log('[Search Relay] 无法获取选中文本（可能是特殊页面）')
+    if (canInject) {
+      try {
+        const selectionResults = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => window.getSelection().toString().trim(),
+        })
+        selectedText = selectionResults[0]?.result
+      } catch (e) {
+        console.log('[Search Relay] 无法获取选中文本（可能是特殊页面）')
+      }
     }
 
     if (selectedText) {
