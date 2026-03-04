@@ -48,7 +48,7 @@
     "message": "Search Engine Management"
   },
   "engineManagementDesc": {
-    "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to). All engines are \"Source Engines\" (extract keywords from) by default."
+    "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to)."
   },
   "addEditEngine": {
     "message": "Add/Edit Engine"
