@@ -23,9 +23,9 @@
 
       <!-- 目标搜索引擎选择 -->
       <section class="card">
-        <h2 data-i18n="currentTargetEngine">当前目标引擎</h2>
+        <h2 data-i18n="currentTargetEngine">默认目标引擎</h2>
         <p class="description" data-i18n="currentTargetEngineDesc">
-          选择点击插件图标时要跳转到的搜索引擎
+          点击插件图标后将使用该搜索引擎执行搜索
         </p>
 
         <div class="form-group">
@@ -55,7 +55,7 @@
       <section class="card">
         <h2 data-i18n="engineManagement">搜索引擎管理</h2>
         <p class="description" data-i18n="engineManagementDesc">
-          管理所有搜索引擎。可设置每个引擎是否作为"目标引擎"（可跳转到）或"源引擎"（可从其提取关键词）。
+          管理所有搜索引擎。可设置每个引擎是否作为"目标引擎"（可用于搜索）
         </p>
 
         <!-- 引擎列表 -->
@@ -155,20 +155,10 @@
                   >
                 </label>
                 <p class="hint" data-i18n="isTargetEngineHint">
-                  勾选后可在下拉菜单和右键菜单中选择跳转到此引擎
+                  勾选后可在下拉菜单和右键菜单中使用该引擎搜索
                 </p>
               </div>
-              <div class="form-group checkbox-group">
-                <label class="checkbox-container">
-                  <input type="checkbox" id="newEngineIsSource" />
-                  <span class="checkbox-label" data-i18n="isSourceEngine"
-                    >作为源引擎</span
-                  >
-                </label>
-                <p class="hint" data-i18n="isSourceEngineHint">
-                  勾选后可从此引擎的搜索结果页面提取关键词
-                </p>
-              </div>
+
             </div>
             <div class="btn-group">
               <button

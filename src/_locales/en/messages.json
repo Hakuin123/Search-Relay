@@ -48,7 +48,7 @@
     "message": "Search Engine Management"
   },
   "engineManagementDesc": {
-    "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to) or \"Source Engine\" (extract keywords from)."
+    "message": "Manage all search engines. Configure whether each engine can be a \"Target Engine\" (redirect to). All engines are \"Source Engines\" (extract keywords from) by default."
   },
   "addEditEngine": {
     "message": "Add/Edit Engine"
@@ -98,12 +98,6 @@
   "isTargetEngineHint": {
     "message": "When checked, this engine will appear in dropdown menu and context menu for redirection"
   },
-  "isSourceEngine": {
-    "message": "As Source Engine"
-  },
-  "isSourceEngineHint": {
-    "message": "When checked, keywords can be extracted from this engine's search result pages"
-  },
   "addEngineBtn": {
     "message": "Add Engine"
   },
@@ -127,9 +121,6 @@
   },
   "gridColumnParam": {
     "message": "Parameter"
-  },
-  "gridColumnSource": {
-    "message": "Source"
   },
   "gridColumnTarget": {
     "message": "Target"
@@ -181,9 +172,6 @@
   },
   "errorUrlPlaceholder": {
     "message": "URL must contain %s as keyword placeholder"
-  },
-  "errorEngineRole": {
-    "message": "At least one role (Target or Source) must be selected"
   },
   "confirmDelete": {
     "message": "Are you sure you want to delete this engine?"

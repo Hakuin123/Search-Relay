@@ -48,7 +48,7 @@
     "message": "搜索引擎管理"
   },
   "engineManagementDesc": {
-    "message": "管理所有搜索引擎。可设置每个引擎是否作为\"目标引擎\"（可跳转到）或\"源引擎\"（可从其提取关键词）。"
+    "message": "管理所有搜索引擎。可设置每个引擎是否作为\"目标引擎\"（可跳转到）。默认所有引擎都可作为\"源引擎\"（可从其提取关键词）。"
   },
   "addEditEngine": {
     "message": "添加/编辑引擎"
@@ -98,12 +98,6 @@
   "isTargetEngineHint": {
     "message": "勾选后可在下拉菜单和右键菜单中选择跳转到此引擎"
   },
-  "isSourceEngine": {
-    "message": "作为源引擎"
-  },
-  "isSourceEngineHint": {
-    "message": "勾选后可从此引擎的搜索结果页面提取关键词"
-  },
   "addEngineBtn": {
     "message": "添加引擎"
   },
@@ -127,9 +121,6 @@
   },
   "gridColumnParam": {
     "message": "参数"
-  },
-  "gridColumnSource": {
-    "message": "源引擎"
   },
   "gridColumnTarget": {
     "message": "目标引擎"
@@ -181,9 +172,6 @@
   },
   "errorUrlPlaceholder": {
     "message": "URL 必须包含 %s 作为关键词占位符"
-  },
-  "errorEngineRole": {
-    "message": "至少需要勾选一个角色（目标引擎或源引擎）"
   },
   "confirmDelete": {
     "message": "确定要删除此引擎吗？"

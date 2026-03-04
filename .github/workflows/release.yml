@@ -189,3 +189,12 @@ jobs:
           zip-path: web-ext-artifacts/*.zip
           client-id: ${{ secrets.EDGE_CLIENT_ID }}
           api-key: ${{ secrets.EDGE_API_KEY }}
+
+      - name: Publish to Chrome Web Store
+        uses: wdzeng/chrome-extension@v1
+        with:
+          extension-id: 'kldhhobmmeolcaliogenmnaalciifjoh'
+          zip-path: web-ext-artifacts/*.zip
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}

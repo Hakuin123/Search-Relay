@@ -369,7 +369,7 @@ async function extractKeywordFromUrl(urlString) {
     const allEngines = engines || DEFAULT_ENGINES
 
     // 筛选出作为源引擎的引擎
-    const sourceEngines = allEngines.filter((e) => e.isSource)
+    const sourceEngines = allEngines
 
     for (const engine of sourceEngines) {
       if (

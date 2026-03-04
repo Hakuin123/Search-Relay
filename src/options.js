@@ -27,7 +27,6 @@ const elements = {
   newEngineDomain: document.getElementById('newEngineDomain'),
   newEngineParam: document.getElementById('newEngineParam'),
   newEngineIsTarget: document.getElementById('newEngineIsTarget'),
-  newEngineIsSource: document.getElementById('newEngineIsSource'),
   addEngine: document.getElementById('addEngine'),
   cancelEditEngine: document.getElementById('cancelEditEngine'),
   enginesGrid: document.getElementById('engines-grid'),
@@ -165,27 +164,12 @@ function initGrid() {
       },
       { id: 'param', name: i18n('gridColumnParam'), width: '100px' },
       {
-        id: 'isSource',
-        name: i18n('gridColumnSource'),
-        sort: true,
-        width: '9%',
-        formatter: (cell, row) => {
-          const id = row.cells[7].data // 获取隐藏的 ID 列
-          return gridjs.html(`
-                        <input type="checkbox" 
-                               class="chk-source" 
-                               data-id="${id}" 
-                               ${cell ? 'checked' : ''} />
-                    `)
-        },
-      },
-      {
         id: 'isTarget',
         name: i18n('gridColumnTarget'),
         sort: true,
         width: '10.5%',
         formatter: (cell, row) => {
-          const id = row.cells[7].data // 获取隐藏的 ID 列
+          const id = row.cells[5].data // 获取隐藏的 ID 列
           return gridjs.html(`
                         <input type="checkbox" 
                                class="chk-target" 
@@ -200,7 +184,7 @@ function initGrid() {
         sort: false,
         width: '8%',
         formatter: (cell, row) => {
-          const id = row.cells[7].data
+          const id = row.cells[5].data
           const editTitle = i18n('editTooltip')
           const deleteTitle = i18n('deleteTooltip')
           const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`
@@ -254,7 +238,6 @@ function renderEnginesGrid() {
     badge: e.badge,
     url: e.url,
     param: e.param || '',
-    isSource: e.isSource,
     isTarget: e.isTarget,
     id: e.id,
   }))
@@ -329,11 +312,7 @@ function handleGridClick(e) {
  * 处理 Grid 变更事件 (Checkbox)
  */
 async function handleGridChange(e) {
-  if (e.target.classList.contains('chk-source')) {
-    const id = e.target.dataset.id
-    const checked = e.target.checked
-    await updateEngineState(id, { isSource: checked })
-  } else if (e.target.classList.contains('chk-target')) {
+  if (e.target.classList.contains('chk-target')) {
     const id = e.target.dataset.id
     const checked = e.target.checked
     await updateEngineState(id, { isTarget: checked })
@@ -477,7 +456,6 @@ async function handleEngineSubmit() {
   const domain = elements.newEngineDomain.value.trim()
   const param = elements.newEngineParam.value.trim()
   const isTarget = elements.newEngineIsTarget.checked
-  const isSource = elements.newEngineIsSource.checked
 
   // 验证输入
   if (!name) {
@@ -498,11 +476,6 @@ async function handleEngineSubmit() {
     return
   }
 
-  if (!isTarget && !isSource) {
-    showStatus(i18n('errorEngineRole'), true)
-    return
-  }
-
   const engineData = {
     name,
     badge,
@@ -510,7 +483,6 @@ async function handleEngineSubmit() {
     domain,
     param,
     isTarget,
-    isSource,
   }
 
   if (editingEngineId === null) {
@@ -559,7 +531,6 @@ function startEditEngine(id) {
   elements.newEngineDomain.value = engine.domain || ''
   elements.newEngineParam.value = engine.param || ''
   elements.newEngineIsTarget.checked = engine.isTarget
-  elements.newEngineIsSource.checked = engine.isSource
 
   // 更新按钮状态
   elements.addEngine.textContent = i18n('saveChangesBtn')
@@ -583,7 +554,6 @@ function resetEditState() {
   elements.newEngineDomain.value = ''
   elements.newEngineParam.value = ''
   elements.newEngineIsTarget.checked = true
-  elements.newEngineIsSource.checked = false
 
   // 恢复按钮状态
   elements.addEngine.textContent = i18n('addEngineBtn')

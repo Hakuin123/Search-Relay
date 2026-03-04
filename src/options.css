@@ -448,8 +448,6 @@ details[open] .toggle-icon {
 }
 
 /* 特定列居中对齐 */
-th[data-column-id='isSource'],
-td[data-column-id='isSource'],
 th[data-column-id='isTarget'],
 td[data-column-id='isTarget'],
 th[data-column-id='actions'],
@@ -458,14 +456,12 @@ td[data-column-id='actions'] {
 }
 
 /* 禁用特定列的调整大小手柄 */
-th[data-column-id='isSource'] .gridjs-resizable,
 th[data-column-id='isTarget'] .gridjs-resizable,
 th[data-column-id='actions'] .gridjs-resizable {
   display: none !important;
 }
 
 /* Grid内复选框样式 */
-.chk-source,
 .chk-target {
   width: 18px;
   height: 18px;
