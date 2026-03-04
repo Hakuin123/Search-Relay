@@ -368,10 +368,7 @@ async function extractKeywordFromUrl(urlString) {
     const { engines } = await chrome.storage.sync.get(['engines'])
     const allEngines = engines || DEFAULT_ENGINES
 
-    // 筛选出作为源引擎的引擎
-    const sourceEngines = allEngines
-
-    for (const engine of sourceEngines) {
+    for (const engine of allEngines) {
       if (
         hostname === engine.domain ||
         hostname.endsWith('.' + engine.domain)
