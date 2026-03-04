@@ -193,7 +193,7 @@ jobs:
       - name: Publish to Chrome Web Store
         uses: wdzeng/chrome-extension@v1
         with:
-          extension-id: 'kldhhobmmeolcaliogenmnaalciifjoh'
+          extension-id: 'pdfcebejkdmomigfhbfejipoljdkbnhf'
           zip-path: web-ext-artifacts/*.zip
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
