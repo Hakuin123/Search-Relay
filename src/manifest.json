@@ -30,7 +30,7 @@
   ],
   "externally_connectable": {
     "matches": [
-      "https://search-relay.hk256.top/*",
+      "https://search-relay.hk256.dev/*",
       "http://127.0.0.1:3000/*",
       "http://localhost:3000/*"
     ]
