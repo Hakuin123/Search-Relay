@@ -257,7 +257,7 @@ async function handleSearchAction(tab, specificEngineId = null) {
 
     // ========== 优先级 1: 划词搜索 ==========
     let selectedText = ''
-    if (canInject) {
+    if (canInject && tab.status !== 'loading') {
       try {
         const selectionResults = await chrome.scripting.executeScript({
           target: { tabId: tab.id },
@@ -443,8 +443,10 @@ async function performSearch(
       }
     }
 
+    await chrome.tabs.create({ url: searchUrl })
+
     // 通知 onboarding 页面（如果有源标签页）
-    if (sourceTabId) {
+    if (sourceTabId && isFromOnboarding) {
       try {
         const eventType = isSelectionSearch
           ? 'EXTENSION_SELECTION_TRIGGERED'
@@ -465,8 +467,6 @@ async function performSearch(
         )
       }
     }
-
-    await chrome.tabs.create({ url: searchUrl })
   } catch (error) {
     console.error('[Search Relay] 执行搜索失败:', error)
   }
